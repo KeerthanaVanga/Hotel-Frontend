@@ -4,7 +4,7 @@ export type CheckIn = {
   id: string;
   guestName: string;
   roomType: string;
-  status: CheckInStatus;
+  status: string;
   bookingDate: string;
   adults: number;
   children: number;

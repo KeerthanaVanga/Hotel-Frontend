@@ -1,9 +1,5 @@
 import { useState } from "react";
-import type {
-  Payment,
-  PaymentMethod,
-  PaymentStatus,
-} from "../../types/Payment";
+import type { Payment } from "../../types/Payment";
 
 interface Props {
   payment: Payment;
@@ -11,49 +7,37 @@ interface Props {
   onSave: (payment: Payment) => void;
 }
 
-export default function PaymentEditModal({
-  payment,
-  onClose,
-  onSave,
-}: Props) {
+export default function PaymentEditModal({ payment, onClose, onSave }: Props) {
   const [form, setForm] = useState<Payment>(payment);
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
       <div className="w-full max-w-lg rounded-xl border border-[#3A1A22] bg-[#241217] p-6 space-y-5">
         {/* Header */}
-        <h2 className="text-lg font-serif text-[#F5DEB3]">
-          Edit Payment
-        </h2>
+        <h2 className="text-lg font-serif text-[#F5DEB3]">Edit Payment</h2>
 
         {/* Paid Amount */}
         <Input
           label="Paid Amount"
           type="number"
           value={form.billPaid}
-          onChange={(v) =>
-            setForm({ ...form, billPaid: Number(v) })
-          }
+          onChange={(v) => setForm({ ...form, billPaid: Number(v) })}
         />
 
         {/* Payment Method */}
-        <Select<PaymentMethod>
+        <Select
           label="Payment Method"
           value={form.paymentMethod}
           options={["Cash", "Card", "UPI", "Bank Transfer"]}
-          onChange={(v) =>
-            setForm({ ...form, paymentMethod: v })
-          }
+          onChange={(v) => setForm({ ...form, paymentMethod: v })}
         />
 
         {/* Payment Status */}
-        <Select<PaymentStatus>
+        <Select
           label="Payment Status"
           value={form.status}
           options={["success", "failed", "pending", "partial"]}
-          onChange={(v) =>
-            setForm({ ...form, status: v })
-          }
+          onChange={(v) => setForm({ ...form, status: v })}
         />
 
         {/* Actions */}
@@ -92,17 +76,10 @@ interface InputProps {
   onChange: (value: string) => void;
 }
 
-function Input({
-  label,
-  value,
-  type = "text",
-  onChange,
-}: InputProps) {
+function Input({ label, value, type = "text", onChange }: InputProps) {
   return (
     <div>
-      <label className="block mb-1 text-sm text-[#F5DEB3]">
-        {label}
-      </label>
+      <label className="block mb-1 text-sm text-[#F5DEB3]">{label}</label>
       <input
         type={type}
         value={value}
@@ -133,9 +110,7 @@ function Select<T extends string>({
 }: SelectProps<T>) {
   return (
     <div>
-      <label className="block mb-1 text-sm text-[#F5DEB3]">
-        {label}
-      </label>
+      <label className="block mb-1 text-sm text-[#F5DEB3]">{label}</label>
       <select
         value={value}
         onChange={(e) => onChange(e.target.value as T)}

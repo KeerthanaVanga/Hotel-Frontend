@@ -12,6 +12,6 @@ export type Payment = {
   perNightPrice: number;
   billGenerated: number;
   billPaid: number;
-  paymentMethod: PaymentMethod; // ✅ FIXED
-  status: PaymentStatus; // ✅ FIXED
+  paymentMethod: string; // ✅ FIXED
+  status: string; // ✅ FIXED
 };

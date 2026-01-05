@@ -40,10 +40,7 @@ export default function PaymentsPage() {
     queryFn: getPayments,
     select: (response): Payment[] =>
       response.data.map((p) => {
-        const nights = daysBetween(
-          p.bookings.check_in,
-          p.bookings.check_out
-        );
+        const nights = daysBetween(p.bookings.check_in, p.bookings.check_out);
 
         const billGenerated = Number(p.bill_amount);
         const billPaid = Number(p.bill_paid_amount);
@@ -77,9 +74,7 @@ export default function PaymentsPage() {
   if (isError) {
     return (
       <section className="space-y-6">
-        <h1 className="text-2xl font-serif text-[#F5DEB3]">
-          Payments
-        </h1>
+        <h1 className="text-2xl font-serif text-[#F5DEB3]">Payments</h1>
         <p className="text-red-400">
           {(error as Error)?.message || "Failed to load payments"}
         </p>
@@ -89,9 +84,7 @@ export default function PaymentsPage() {
 
   return (
     <section className="space-y-6">
-      <h1 className="text-2xl font-serif text-[#F5DEB3]">
-        Payments
-      </h1>
+      <h1 className="text-2xl font-serif text-[#F5DEB3]">Payments</h1>
 
       {isLoading ? (
         <PaymentsTableSkeleton />

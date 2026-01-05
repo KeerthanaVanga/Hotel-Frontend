@@ -38,9 +38,7 @@ export default function CheckInTable({
                 <td className="px-4 py-3 text-center">{c.roomType}</td>
                 <td className="px-4 py-3 text-center">
                   <span
-                    className={`rounded-full px-2.5 py-1 text-xs font-medium ${
-                      STATUS_STYLE[c.status]
-                    }`}
+                    className={`rounded-full px-2.5 py-1 text-xs font-medium`}
                   >
                     {c.status}
                   </span>
@@ -76,11 +74,7 @@ export default function CheckInTable({
           >
             <div className="flex justify-between">
               <p className="font-medium text-[#F5DEB3]">{c.guestName}</p>
-              <span
-                className={`rounded-full px-2 py-0.5 text-xs ${
-                  STATUS_STYLE[c.status]
-                }`}
-              >
+              <span className={`rounded-full px-2 py-0.5 text-xs`}>
                 {c.status}
               </span>
             </div>
