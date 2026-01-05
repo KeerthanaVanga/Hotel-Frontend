@@ -1,3 +1,7 @@
+export type PaymentMethod = "Cash" | "Card" | "UPI" | "Bank Transfer";
+
+export type PaymentStatus = "pending" | "success" | "failed" | "partial";
+
 export type Payment = {
   id: string;
   userName: string;
@@ -8,6 +12,6 @@ export type Payment = {
   perNightPrice: number;
   billGenerated: number;
   billPaid: number;
-  paymentMethod: string;
-  status: "pending" | "success" | "partial";
+  paymentMethod: PaymentMethod; // ✅ FIXED
+  status: PaymentStatus; // ✅ FIXED
 };

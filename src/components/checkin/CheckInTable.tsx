@@ -38,7 +38,9 @@ export default function CheckInTable({
                 <td className="px-4 py-3 text-center">{c.roomType}</td>
                 <td className="px-4 py-3 text-center">
                   <span
-                    className={`rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_STYLE[c.status]}`}
+                    className={`rounded-full px-2.5 py-1 text-xs font-medium ${
+                      STATUS_STYLE[c.status]
+                    }`}
                   >
                     {c.status}
                   </span>
@@ -73,18 +75,20 @@ export default function CheckInTable({
             className="rounded-xl border border-[#3A1A22] bg-[#241217] p-4 space-y-2"
           >
             <div className="flex justify-between">
-              <p className="font-medium text-[#F5DEB3]">
-                {c.guestName}
-              </p>
+              <p className="font-medium text-[#F5DEB3]">{c.guestName}</p>
               <span
-                className={`rounded-full px-2 py-0.5 text-xs ${STATUS_STYLE[c.status]}`}
+                className={`rounded-full px-2 py-0.5 text-xs ${
+                  STATUS_STYLE[c.status]
+                }`}
               >
                 {c.status}
               </span>
             </div>
 
             <p className="text-sm text-[#F5DEB3]/70">{c.roomType}</p>
-            <p className="text-sm">Guests: {c.adults}A / {c.children}C</p>
+            <p className="text-sm">
+              Guests: {c.adults}A / {c.children}C
+            </p>
             <p className="text-sm">Nights: {c.nights}</p>
             <p className="text-sm">
               {c.fromDate} → {c.toDate}
