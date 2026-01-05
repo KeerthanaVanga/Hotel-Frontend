@@ -1,13 +1,6 @@
 import type { Payment } from "../../types/Payment";
 import { Pencil } from "lucide-react";
 
-const STATUS_STYLES = {
-  success: "bg-emerald-500/15 text-emerald-400",
-  failed: "bg-red-500/15 text-red-400",
-  pending: "bg-yellow-500/15 text-yellow-400",
-  partial: "bg-indigo-500/15 text-indigo-400",
-};
-
 export default function PaymentsTable({
   payments,
   onEdit,
@@ -50,7 +43,7 @@ export default function PaymentsTable({
                 <td className="px-4 py-3 text-center">{p.paymentMethod}</td>
                 <td className="px-4 py-3 text-center">
                   <span
-                    className={`rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_STYLES[p.status]}`}
+                    className={`rounded-full px-2.5 py-1 text-xs font-medium`}
                   >
                     {p.status}
                   </span>
@@ -80,14 +73,10 @@ export default function PaymentsTable({
             <div className="flex justify-between items-start">
               <div>
                 <p className="font-medium text-[#F5DEB3]">{p.userName}</p>
-                <p className="text-xs text-[#F5DEB3]/60">
-                  {p.roomType}
-                </p>
+                <p className="text-xs text-[#F5DEB3]/60">{p.roomType}</p>
               </div>
 
-              <span
-                className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[p.status]}`}
-              >
+              <span className={`rounded-full px-2 py-0.5 text-xs font-medium`}>
                 {p.status}
               </span>
             </div>

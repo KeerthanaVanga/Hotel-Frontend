@@ -1,11 +1,5 @@
 import type { CheckIn } from "../../types/CheckIn";
 
-const STATUS_STYLE = {
-  "checked-in": "bg-emerald-500/15 text-emerald-400",
-  upcoming: "bg-indigo-500/15 text-indigo-400",
-  cancelled: "bg-red-500/15 text-red-400",
-};
-
 export default function CheckInTable({
   checkins,
   onCancel,
