@@ -4,7 +4,6 @@ import { useAuth } from "../context/AuthContext";
 import ROUTES from "./path.route";
 import GlobalLoader from "../components/layout/GlobalLoader";
 
-
 const PrivateRoute = () => {
   const { isAuthenticated, loading } = useAuth();
   const navigation = useNavigation();

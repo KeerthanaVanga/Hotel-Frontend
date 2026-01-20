@@ -1,15 +1,34 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { Home, ChevronRight } from "lucide-react";
+import { BREADCRUMB_MAP } from "../../types/BreadCrumbs";
 
-const LABEL_MAP: Record<string, string> = {
-  rooms: "Rooms",
-  new: "Add Room",
-  edit: "Edit Room",
-};
+type Crumb = { path: string; label: string };
 
 export default function Breadcrumbs() {
-  const location = useLocation();
-  const segments = location.pathname.split("/").filter(Boolean);
+  const { pathname } = useLocation();
+  const params = useParams();
+
+  // Build crumbs from URL segments so parent routes always appear
+  const crumbs: Crumb[] = (() => {
+    const segments = pathname.split("/").filter(Boolean); // removes leading/trailing ""
+    const paramValueToKey = Object.fromEntries(
+      Object.entries(params)
+        .filter(([, v]) => v != null)
+        .map(([k, v]) => [String(v), k]),
+    );
+
+    return segments.map((seg, i) => {
+      const path = "/" + segments.slice(0, i + 1).join("/");
+
+      // If current segment equals a param value, map using param key
+      const paramKey = paramValueToKey[seg];
+
+      const label =
+        (paramKey && BREADCRUMB_MAP[paramKey]) || BREADCRUMB_MAP[seg] || seg;
+
+      return { path, label };
+    });
+  })();
 
   return (
     <nav
@@ -26,47 +45,29 @@ export default function Breadcrumbs() {
         <li>
           <Link
             to="/"
-            className="
-              flex items-center gap-1
-              text-[#D4AF37] hover:text-[#F5DEB3]
-              transition
-            "
+            className="flex items-center gap-1 text-[#D4AF37] hover:text-[#F5DEB3] transition"
           >
             <Home size={14} />
           </Link>
         </li>
 
-        {segments.map((segment, index) => {
-          const path = "/" + segments.slice(0, index + 1).join("/");
-          const isLast = index === segments.length - 1;
-
-          const label =
-            LABEL_MAP[segment] ||
-            (segment.match(/^\d+$/)
-              ? "Room Details"
-              : segment);
+        {crumbs.map((crumb, index) => {
+          const isLast = index === crumbs.length - 1;
 
           return (
-            <li key={path} className="flex items-center gap-2">
-              <ChevronRight
-                size={14}
-                className="text-[#F5DEB3]/40"
-              />
+            <li key={crumb.path} className="flex items-center gap-2">
+              <ChevronRight size={14} className="text-[#F5DEB3]/40" />
 
               {isLast ? (
                 <span className="font-medium text-[#F5DEB3]">
-                  {label}
+                  {crumb.label}
                 </span>
               ) : (
                 <Link
-                  to={path}
-                  className="
-                    text-[#F5DEB3]/70
-                    hover:text-[#F5DEB3]
-                    transition
-                  "
+                  to={crumb.path}
+                  className="text-[#F5DEB3]/70 hover:text-[#F5DEB3] transition"
                 >
-                  {label}
+                  {crumb.label}
                 </Link>
               )}
             </li>

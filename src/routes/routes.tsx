@@ -4,7 +4,6 @@ import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
 import RootLayout from "../components/layout/RootLayout";
 
-
 const DashboardPage = lazy(() => import("../pages/DashboardPage"));
 const DashboardLayout = lazy(
   () => import("../components/layout/DashboardLayout")
@@ -22,12 +21,13 @@ const BookingsPage = lazy(() => import("../pages/Bookings"));
 const PaymentsPage = lazy(() => import("../pages/Payments"));
 const ReviewsPage = lazy(() => import("../pages/Reviews"));
 const WhatsAppBotPage = lazy(() => import("../pages/Whatsapp"));
-const RoomsDetailsPage = lazy(() => import("../components/rooms/RoomDetailsPage"));
+const RoomsDetailsPage = lazy(
+  () => import("../components/rooms/RoomDetailsPage")
+);
 const RoomsEditPage = lazy(() => import("../components/rooms/RoomFormPage"));
 const InventoryDetailsPage = lazy(() => import("../pages/InventoryDetails"));
 const OffersPage = lazy(() => import("../pages/OffersPage"));
 const OffersFormPage = lazy(() => import("../pages/OffersForm"));
-
 
 const router = createBrowserRouter([
   {
@@ -69,9 +69,8 @@ const router = createBrowserRouter([
                 element: <InventoryPage />,
               },
               {
-               path:"/inventory/:propertyToken",
-               element:<InventoryDetailsPage/>
-
+                path: "/inventory/:propertyToken",
+                element: <InventoryDetailsPage />,
               },
               {
                 path: "/reports",
@@ -83,44 +82,45 @@ const router = createBrowserRouter([
               },
               {
                 path: "/rooms",
-                children:[
+                children: [
                   {
-                    index:true,
-                    element:<RoomsPage/>
+                    index: true,
+                    element: <RoomsPage />,
                   },
                   {
-                    path:":roomId",
-                    element:<RoomsDetailsPage/>
-                  },{
-                    path:":roomId/edit",
-                    element:<RoomsEditPage/>
+                    path: ":roomId",
+                    element: <RoomsDetailsPage />,
                   },
                   {
-                    path:"new",
-                    element:<RoomsEditPage/>
-                  }
-                ]
+                    path: ":roomId/edit",
+                    element: <RoomsEditPage />,
+                  },
+                  {
+                    path: "new",
+                    element: <RoomsEditPage />,
+                  },
+                ],
               },
               {
                 path: "/bookings",
                 element: <BookingsPage />,
               },
               {
-                path:'/offers',
-                children:[
+                path: "/offers",
+                children: [
                   {
-                    index:true,
-                    element:<OffersPage/>
+                    index: true,
+                    element: <OffersPage />,
                   },
                   {
-                    path:"new",
-                    element:<OffersFormPage/>
+                    path: "new",
+                    element: <OffersFormPage />,
                   },
                   {
-                    path:":offerId/edit",
-                    element:<OffersFormPage/>
+                    path: ":offerId/edit",
+                    element: <OffersFormPage />,
                   },
-                ]
+                ],
               },
               {
                 path: "/payments",
@@ -133,7 +133,7 @@ const router = createBrowserRouter([
               {
                 path: "/whatsapp",
                 element: <WhatsAppBotPage />,
-              }
+              },
             ],
           },
         ],

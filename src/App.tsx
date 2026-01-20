@@ -9,13 +9,13 @@ import { queryClient } from "./utils/TanStack";
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-    <AuthProvider>
-      <LoadingProvider>
-        <ToastProvider>
-          <RouterProvider router={routes} />
-        </ToastProvider>
-      </LoadingProvider>
-    </AuthProvider>
+      <AuthProvider>
+        <LoadingProvider>
+          <ToastProvider>
+            <RouterProvider router={routes} />
+          </ToastProvider>
+        </LoadingProvider>
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
