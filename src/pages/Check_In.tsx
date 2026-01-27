@@ -8,7 +8,9 @@ import CheckInTableSkeleton from "../components/checkin/CheckInTableSkeleton";
 import Pagination from "../components/ui/Pagination";
 import EmptyState from "../components/ui/EmptyState";
 import { getTodayCheckIns } from "../api/checkins.api";
-
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateBookingStatus } from "../api/checkins.api";
+import { useToast } from "../components/layout/ToastProvider";
 const ITEMS_PER_PAGE = 4;
 
 function dateOnly(iso: string) {
@@ -23,6 +25,7 @@ function nightsBetween(from: string, to: string) {
 
 export default function CheckInPage() {
   const [page, setPage] = useState(1);
+  const { showToast } = useToast();
 
   const {
     data: checkins = [],
@@ -45,6 +48,23 @@ export default function CheckInPage() {
         fromDate: dateOnly(b.check_in),
         toDate: dateOnly(b.check_out),
       })),
+  });
+
+  const queryClient = useQueryClient();
+
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      updateBookingStatus(id, status),
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: ["checkins", "today"] });
+      setUpdatingId(null);
+      showToast("success", response.message);
+    },
+    onError: () => {
+      setUpdatingId(null);
+    },
   });
 
   const totalPages = Math.ceil(checkins.length / ITEMS_PER_PAGE);
@@ -83,8 +103,10 @@ export default function CheckInPage() {
         <>
           <CheckInTable
             checkins={paginated}
-            onCancel={() => {
-              /* hook cancel API later */
+            updatingId={updatingId}
+            onUpdate={(id) => {
+              setUpdatingId(id);
+              updateMutation.mutate({ id, status: "checked in" });
             }}
           />
 

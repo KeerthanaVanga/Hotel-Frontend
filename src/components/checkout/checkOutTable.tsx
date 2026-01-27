@@ -9,9 +9,11 @@ const STATUS_STYLE = {
 export default function CheckOutTable({
   checkouts,
   onComplete,
+  updatingId,
 }: {
   checkouts: CheckOut[];
   onComplete: (id: string) => void;
+  updatingId: string | null;
 }) {
   return (
     <>
@@ -54,9 +56,14 @@ export default function CheckOutTable({
                 <td className="px-4 py-3 text-right">
                   <button
                     onClick={() => onComplete(c.id)}
-                    className="text-sm text-[#D4AF37] hover:text-[#F5DEB3]"
+                    disabled={updatingId === c.id}
+                    className={`px-3 py-1 text-xs rounded-md border transition ${
+                      updatingId === c.id
+                        ? "border-gray-500 text-gray-400 cursor-not-allowed"
+                        : "border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37] hover:bg-[#D4AF37]/20"
+                    }`}
                   >
-                    Complete
+                    {updatingId === c.id ? "Updating..." : "Update"}
                   </button>
                 </td>
               </tr>
@@ -73,9 +80,7 @@ export default function CheckOutTable({
             className="rounded-xl border border-[#3A1A22] bg-[#241217] p-4 space-y-2"
           >
             <div className="flex justify-between">
-              <p className="font-medium text-[#F5DEB3]">
-                {c.guestName}
-              </p>
+              <p className="font-medium text-[#F5DEB3]">{c.guestName}</p>
               <span
                 className={`rounded-full px-2 py-0.5 text-xs ${STATUS_STYLE[c.status]}`}
               >
@@ -84,18 +89,27 @@ export default function CheckOutTable({
             </div>
 
             <p className="text-sm text-[#F5DEB3]/70">{c.roomType}</p>
-            <p className="text-sm">Guests: {c.adults}A / {c.children}C</p>
+            <p className="text-sm">
+              Guests: {c.adults}A / {c.children}C
+            </p>
             <p className="text-sm">Nights: {c.nights}</p>
             <p className="text-sm">
               {c.fromDate} → {c.toDate}
             </p>
 
-            <button
-              onClick={() => onComplete(c.id)}
-              className="mt-2 w-full rounded-md border border-[#3A1A22] py-2 text-sm text-[#D4AF37] hover:border-[#D4AF37]"
-            >
-              Complete Checkout
-            </button>
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={() => onComplete(c.id)}
+                disabled={updatingId === c.id}
+                className={`flex-1 px-3 py-2 text-xs rounded-md border transition ${
+                  updatingId === c.id
+                    ? "border-gray-500 text-gray-400 cursor-not-allowed"
+                    : "border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37] hover:bg-[#D4AF37]/20"
+                }`}
+              >
+                {updatingId === c.id ? "Updating..." : "Update"}
+              </button>
+            </div>
           </div>
         ))}
       </div>

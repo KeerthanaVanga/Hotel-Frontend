@@ -6,7 +6,7 @@ import RootLayout from "../components/layout/RootLayout";
 
 const DashboardPage = lazy(() => import("../pages/DashboardPage"));
 const DashboardLayout = lazy(
-  () => import("../components/layout/DashboardLayout")
+  () => import("../components/layout/DashboardLayout"),
 );
 const AuthPage = lazy(() => import("../pages/AuthPage"));
 const PageNotFound = lazy(() => import("../pages/PageNotFound"));
@@ -22,7 +22,7 @@ const PaymentsPage = lazy(() => import("../pages/Payments"));
 const ReviewsPage = lazy(() => import("../pages/Reviews"));
 const WhatsAppBotPage = lazy(() => import("../pages/Whatsapp"));
 const RoomsDetailsPage = lazy(
-  () => import("../components/rooms/RoomDetailsPage")
+  () => import("../components/rooms/RoomDetailsPage"),
 );
 const RoomsEditPage = lazy(() => import("../components/rooms/RoomFormPage"));
 const InventoryDetailsPage = lazy(() => import("../pages/InventoryDetails"));

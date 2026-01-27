@@ -2,10 +2,12 @@ import type { CheckIn } from "../../types/CheckIn";
 
 export default function CheckInTable({
   checkins,
-  onCancel,
+  onUpdate,
+  updatingId,
 }: {
   checkins: CheckIn[];
-  onCancel: (id: string) => void;
+  onUpdate: (id: string) => void;
+  updatingId: string | null;
 }) {
   return (
     <>
@@ -46,12 +48,19 @@ export default function CheckInTable({
                   {c.fromDate} → {c.toDate}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button
-                    onClick={() => onCancel(c.id)}
-                    className="text-sm text-red-400 hover:text-red-300"
-                  >
-                    Cancel
-                  </button>
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => onUpdate(c.id)}
+                      disabled={updatingId === c.id}
+                      className={`px-3 py-1 text-xs rounded-md border transition ${
+                        updatingId === c.id
+                          ? "border-gray-500 text-gray-400 cursor-not-allowed"
+                          : "border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37] hover:bg-[#D4AF37]/20"
+                      }`}
+                    >
+                      {updatingId === c.id ? "Updating..." : "Update"}
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -81,13 +90,19 @@ export default function CheckInTable({
             <p className="text-sm">
               {c.fromDate} → {c.toDate}
             </p>
-
-            <button
-              onClick={() => onCancel(c.id)}
-              className="mt-2 w-full rounded-md border border-[#3A1A22] py-2 text-sm text-red-400 hover:border-red-400"
-            >
-              Cancel Booking
-            </button>
+            <div className="flex gap-2 pt-2">
+              <button
+                onClick={() => onUpdate(c.id)}
+                disabled={updatingId === c.id}
+                className={`flex-1 px-3 py-2 text-xs rounded-md border transition ${
+                  updatingId === c.id
+                    ? "border-gray-500 text-gray-400 cursor-not-allowed"
+                    : "border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37] hover:bg-[#D4AF37]/20"
+                }`}
+              >
+                {updatingId === c.id ? "Updating..." : "Update"}
+              </button>
+            </div>
           </div>
         ))}
       </div>

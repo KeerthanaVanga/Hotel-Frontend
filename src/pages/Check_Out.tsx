@@ -8,7 +8,9 @@ import CheckOutTableSkeleton from "../components/checkout/checkOutTableSkeleton"
 import Pagination from "../components/ui/Pagination";
 import EmptyState from "../components/ui/EmptyState";
 import { getTodayCheckOuts } from "../api/checkout.api";
-
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { updateBookingStatus } from "../api/checkins.api";
+import { useToast } from "../components/layout/ToastProvider";
 const ITEMS_PER_PAGE = 4;
 
 function dateOnly(iso: string) {
@@ -18,15 +20,12 @@ function dateOnly(iso: string) {
 function nightsBetween(from: string, to: string) {
   const d1 = new Date(from);
   const d2 = new Date(to);
-  return Math.max(
-    1,
-    Math.round((d2.getTime() - d1.getTime()) / 86400000)
-  );
+  return Math.max(1, Math.round((d2.getTime() - d1.getTime()) / 86400000));
 }
 
 export default function CheckOutPage() {
   const [page, setPage] = useState(1);
-
+  const { showToast } = useToast();
   const {
     data: checkouts = [],
     isLoading,
@@ -46,9 +45,9 @@ export default function CheckOutPage() {
         const status =
           checkOutDate.getTime() < today.getTime()
             ? "overstayed"
-            : b.status === "checked-out"
-            ? "checked-out"
-            : "today";
+            : b.status === "checked out"
+              ? "checked-out"
+              : "today";
 
         return {
           id: String(b.booking_id),
@@ -65,6 +64,23 @@ export default function CheckOutPage() {
       }),
   });
 
+  const queryClient = useQueryClient();
+
+  const [updatingId, setUpdatingId] = useState<string | null>(null);
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, status }: { id: string; status: string }) =>
+      updateBookingStatus(id, status),
+    onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: ["checkins", "today"] });
+      setUpdatingId(null);
+      showToast("success", response.message);
+    },
+    onError: () => {
+      setUpdatingId(null);
+    },
+  });
+
   const totalPages = Math.ceil(checkouts.length / ITEMS_PER_PAGE);
 
   const paginated = useMemo(() => {
@@ -75,12 +91,9 @@ export default function CheckOutPage() {
   if (isError) {
     return (
       <section className="space-y-6">
-        <h1 className="text-2xl font-serif text-[#F5DEB3]">
-          Check-outs
-        </h1>
+        <h1 className="text-2xl font-serif text-[#F5DEB3]">Check-outs</h1>
         <p className="text-red-400">
-          {(error as Error)?.message ||
-            "Failed to load today's check-outs"}
+          {(error as Error)?.message || "Failed to load today's check-outs"}
         </p>
       </section>
     );
@@ -88,9 +101,7 @@ export default function CheckOutPage() {
 
   return (
     <section className="space-y-6">
-      <h1 className="text-2xl font-serif text-[#F5DEB3]">
-        Today's Check-outs
-      </h1>
+      <h1 className="text-2xl font-serif text-[#F5DEB3]">Today's Check-outs</h1>
 
       {isLoading ? (
         <CheckOutTableSkeleton />
@@ -106,8 +117,10 @@ export default function CheckOutPage() {
         <>
           <CheckOutTable
             checkouts={paginated}
-            onComplete={() => {
-              /* hook checkout completion API later */
+            updatingId={updatingId}
+            onComplete={(id) => {
+              setUpdatingId(id);
+              updateMutation.mutate({ id, status: "checked out" });
             }}
           />
 

@@ -1,50 +1,34 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+
 import ChatSidebar from "../components/whatsapp/ChatSidebar";
 import EmptyChat from "../components/whatsapp/EmptyChat";
 import ChatWindow from "../components/whatsapp/ChatWindow";
-import type { ChatUser, Message } from "../types/Chat";
-import api from "../lib/axios-interceptor";
+
+import type { ChatUser } from "../types/Chat";
+import { fetchWhatsAppUsers, fetchWhatsAppMessages } from "../api/whatsapp.api";
 
 export default function WhatsAppPage() {
-  const [loadingUsers, setLoadingUsers] = useState(true);
-  const [loadingMessages, setLoadingMessages] = useState(false);
-
-  const [users, setUsers] = useState<ChatUser[]>([]);
   const [selectedUser, setSelectedUser] = useState<ChatUser | null>(null);
-  const [messages, setMessages] = useState<Message[]>([]);
 
-  useEffect(() => {
-    const fetchUsers = async () => {
-      setLoadingUsers(true);
-      const res = await api.get("/whatsapp/users");
-      setUsers(res.data.data);
-      setLoadingUsers(false);
-    };
-    fetchUsers();
-  }, []);
+  /* ---------- USERS ---------- */
+  const { data: users = [], isLoading: loadingUsers } = useQuery({
+    queryKey: ["whatsapp-users"],
+    queryFn: fetchWhatsAppUsers,
+  });
 
-  const handleSelectUser = async (user: ChatUser) => {
-    setSelectedUser(user);
-    setLoadingMessages(true);
-    setMessages([]);
+  /* ---------- MESSAGES ---------- */
+  const phone = selectedUser?.phone ?? "";
 
-    const res = await api.get(`/whatsapp/messages/${user.phone}`);
-    setMessages(
-      res.data.data.map((m: any) => ({
-        id: String(m.id),
-        text: m.message,
-        fromMe: m.sender_type === "ai",
-        time: new Date(m.created_at).toLocaleTimeString([], {
-          day: "2-digit",
-          month: "short",
-          year: "numeric",
-          hour: "2-digit",
-          minute: "2-digit",
-        }),
-      }))
-    );
-    setLoadingMessages(false);
-  };
+  const {
+    data: messages = [],
+    isLoading: loadingMessages,
+    isFetching,
+  } = useQuery({
+    queryKey: ["whatsapp-messages", phone],
+    enabled: !!phone,
+    queryFn: () => fetchWhatsAppMessages(phone),
+  });
 
   return (
     <div className="flex items-center justify-center">
@@ -53,7 +37,7 @@ export default function WhatsAppPage() {
           loading={loadingUsers}
           users={users}
           selectedUser={selectedUser}
-          onSelect={handleSelectUser}
+          onSelect={setSelectedUser}
         />
 
         {!selectedUser ? (
@@ -62,7 +46,7 @@ export default function WhatsAppPage() {
           <ChatWindow
             user={selectedUser}
             messages={messages}
-            loading={loadingMessages}
+            loading={loadingMessages || isFetching}
           />
         )}
       </div>
