@@ -26,7 +26,7 @@ export default function TodayBookingsChart({
           <XAxis dataKey="hour" tick={{ fill: "#F5DEB3" }} />
           <YAxis tick={{ fill: "#F5DEB3" }} />
           <Tooltip />
-          <Bar dataKey="count" />
+          <Bar dataKey="count" fill="#D4AF37" />
         </BarChart>
       </ResponsiveContainer>
     </div>

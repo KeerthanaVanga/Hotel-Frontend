@@ -145,7 +145,7 @@ const Navbar = () => {
                 className="flex items-center gap-2 rounded-full hover:bg-white/5 px-2 py-1 transition"
               >
                 <img
-                  src="https://i.pravatar.cc/40"
+                  src={HotelLogo}
                   alt="avatar"
                   className="h-8 w-8 rounded-full object-cover border border-[#3A1A22]"
                 />
