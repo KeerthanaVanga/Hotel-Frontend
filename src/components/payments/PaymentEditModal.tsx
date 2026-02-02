@@ -11,6 +11,14 @@ const PAYMENT_METHOD_OPTIONS: PaymentMethodOption[] = [
   "offline",
 ];
 
+/** Map legacy booking values (partial, online) to payment API values */
+function normalizePaymentMethod(value: string | undefined): PaymentMethodOption {
+  if (value === "partial") return "partial_online";
+  if (value === "online") return "full_online";
+  if (value === "partial_online" || value === "full_online" || value === "offline") return value;
+  return "offline";
+}
+
 const PAYMENT_STATUS_OPTIONS: PaymentStatusOption[] = [
   "partial_paid",
   "paid",
@@ -36,7 +44,7 @@ export default function PaymentEditModal({
 }: Props) {
   const [billPaid, setBillPaid] = useState(payment.billPaid);
   const [method, setMethod] = useState<PaymentMethodOption>(
-    (payment.paymentMethod as PaymentMethodOption) || "offline"
+    normalizePaymentMethod(payment.paymentMethod)
   );
   const [status, setStatus] = useState<PaymentStatusOption>(
     (payment.status as PaymentStatusOption) || "pending"

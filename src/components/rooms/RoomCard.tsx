@@ -25,7 +25,7 @@ export default function RoomCard({ room }: { room: Room }) {
         <p className="text-sm text-[#F5DEB3]/60">{room.type}</p>
 
         <p className="mt-2 text-[#D4AF37] font-semibold">
-          ${room.pricePerNight} / night
+          ₹{room.pricePerNight} / night
         </p>
       </div>
 
