@@ -56,6 +56,10 @@ export default function InventoryDetailsPage() {
     []
   );
 
+  const backToListUrl = q
+    ? `/inventory?q=${encodeURIComponent(q)}&adults=${adults}`
+    : "/inventory";
+
   if (!enabled) {
     return (
       <section className="space-y-4">
@@ -63,7 +67,7 @@ export default function InventoryDetailsPage() {
           Missing hotel query. Go back and open details from Inventory list.
         </p>
         <button
-          onClick={() => nav(-1)}
+          onClick={() => nav("/inventory")}
           className="rounded-md bg-[#D4AF37] px-4 py-2 text-[#1B0F12]"
         >
           Back
@@ -93,7 +97,7 @@ export default function InventoryDetailsPage() {
           )}
 
           <button
-            onClick={() => nav(-1)}
+            onClick={() => nav(backToListUrl)}
             className="inline-flex items-center gap-2 rounded-full border border-[#3A1A22] bg-[#241217] px-4 py-2 text-sm text-[#F5DEB3]/90 hover:border-[#D4AF37]"
           >
             <X size={16} />
@@ -206,7 +210,20 @@ export default function InventoryDetailsPage() {
   );
 }
 
+const ROOMS_INITIAL = 3;
+
 function PricesTab({ data }: { data: InventoryDetails }) {
+  const [expandedFpIndices, setExpandedFpIndices] = useState<Set<number>>(new Set());
+
+  const toggleFp = (idx: number) => {
+    setExpandedFpIndices((prev) => {
+      const next = new Set(prev);
+      if (next.has(idx)) next.delete(idx);
+      else next.add(idx);
+      return next;
+    });
+  };
+
   return (
     <div className="space-y-4">
       <div className="text-sm text-[#F5DEB3]/70">
@@ -214,98 +231,111 @@ function PricesTab({ data }: { data: InventoryDetails }) {
       </div>
 
       <div className="rounded-xl border border-[#3A1A22] bg-[#241217] overflow-hidden">
-        {data.featuredPrices.map((fp, idx) => (
-          <div key={idx} className="border-b border-[#3A1A22] last:border-b-0">
-            {/* Source row */}
-            <div className="p-4 flex items-center justify-between gap-4">
-              <div className="flex items-center gap-3 min-w-0">
-                {fp.logo ? (
-                  <img src={fp.logo} className="h-8 w-8 rounded bg-white" />
-                ) : (
-                  <div className="h-8 w-8 rounded bg-[#3A1A22]" />
-                )}
-                <div className="min-w-0">
-                  <p className="text-[#F5DEB3] font-medium truncate">
-                    {fp.source}
-                  </p>
-                  {fp.remarks?.length > 0 && (
-                    <p className="text-xs text-[#F5DEB3]/60 truncate">
-                      {fp.remarks.join(" • ")}
-                    </p>
+        {data.featuredPrices.map((fp, idx) => {
+          const rooms = fp.rooms ?? [];
+          const isExpanded = expandedFpIndices.has(idx);
+          const visibleRooms = isExpanded ? rooms : rooms.slice(0, ROOMS_INITIAL);
+          const hasMore = rooms.length > ROOMS_INITIAL;
+
+          return (
+            <div key={idx} className="border-b border-[#3A1A22] last:border-b-0">
+              {/* Source row */}
+              <div className="p-4 flex items-center justify-between gap-4">
+                <div className="flex items-center gap-3 min-w-0">
+                  {fp.logo ? (
+                    <img src={fp.logo} className="h-8 w-8 rounded bg-white" />
+                  ) : (
+                    <div className="h-8 w-8 rounded bg-[#3A1A22]" />
                   )}
+                  <div className="min-w-0">
+                    <p className="text-[#F5DEB3] font-medium truncate">
+                      {fp.source}
+                    </p>
+                    {fp.remarks?.length > 0 && (
+                      <p className="text-xs text-[#F5DEB3]/60 truncate">
+                        {fp.remarks.join(" • ")}
+                      </p>
+                    )}
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 shrink-0">
+                  {typeof fp.ratePerNight === "number" && (
+                    <span className="text-lg font-semibold text-[#F5DEB3]">
+                      ₹{fp.ratePerNight.toLocaleString()}
+                    </span>
+                  )}
+
+                  <a
+                    href={fp.link}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="rounded-full bg-[#D4AF37] px-4 py-2 text-sm font-semibold text-[#1B0F12] hover:opacity-90"
+                  >
+                    Visit site
+                  </a>
                 </div>
               </div>
 
-              <div className="flex items-center gap-3 shrink-0">
-                {typeof fp.ratePerNight === "number" && (
-                  <span className="text-lg font-semibold text-[#F5DEB3]">
-                    ₹{fp.ratePerNight.toLocaleString()}
-                  </span>
-                )}
+              {/* Rooms */}
+              {rooms.length > 0 && (
+                <div className="px-4 pb-4 space-y-3">
+                  {visibleRooms.map((r, rIdx) => (
+                    <div
+                      key={rIdx}
+                      className="flex items-center justify-between gap-4 rounded-lg border border-[#3A1A22] bg-[#1F1216] p-3"
+                    >
+                      <div className="flex items-center gap-3 min-w-0">
+                        <img
+                          src={r.images?.[0] ?? fp.logo}
+                          className="h-14 w-20 rounded object-cover border border-[#3A1A22]"
+                        />
 
-                <a
-                  href={fp.link}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="rounded-full bg-[#D4AF37] px-4 py-2 text-sm font-semibold text-[#1B0F12] hover:opacity-90"
-                >
-                  Visit site
-                </a>
-              </div>
-            </div>
+                        <div className="min-w-0">
+                          <p className="text-[#F5DEB3] font-medium truncate">
+                            {r.name}
+                          </p>
+                          <p className="text-xs text-[#F5DEB3]/60 truncate">
+                            {data.checkInTime || "—"} • Free cancellation (if available)
+                          </p>
+                        </div>
+                      </div>
 
-            {/* Rooms (like screenshot) */}
-            {fp.rooms?.length > 0 && (
-              <div className="px-4 pb-4 space-y-3">
-                {fp.rooms.slice(0, 3).map((r, rIdx) => (
-                  <div
-                    key={rIdx}
-                    className="flex items-center justify-between gap-4 rounded-lg border border-[#3A1A22] bg-[#1F1216] p-3"
-                  >
-                    <div className="flex items-center gap-3 min-w-0">
-                      <img
-                        src={r.images?.[0] ?? fp.logo}
-                        className="h-14 w-20 rounded object-cover border border-[#3A1A22]"
-                      />
+                      <div className="flex items-center gap-3 shrink-0">
+                        {typeof r.ratePerNight === "number" && (
+                          <span className="font-semibold text-[#F5DEB3]">
+                            ₹{r.ratePerNight.toLocaleString()}
+                          </span>
+                        )}
 
-                      <div className="min-w-0">
-                        <p className="text-[#F5DEB3] font-medium truncate">
-                          {r.name}
-                        </p>
-                        <p className="text-xs text-[#F5DEB3]/60 truncate">
-                          {data.checkInTime || "—"} • Free cancellation (if available)
-                        </p>
+                        <a
+                          href={r.link}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="rounded-full border border-[#3A1A22] bg-[#241217] px-4 py-2 text-sm text-[#D4AF37] hover:border-[#D4AF37]"
+                        >
+                          Visit site
+                        </a>
                       </div>
                     </div>
+                  ))}
 
-                    <div className="flex items-center gap-3 shrink-0">
-                      {typeof r.ratePerNight === "number" && (
-                        <span className="font-semibold text-[#F5DEB3]">
-                          ₹{r.ratePerNight.toLocaleString()}
-                        </span>
-                      )}
-
-                      <a
-                        href={r.link}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="rounded-full border border-[#3A1A22] bg-[#241217] px-4 py-2 text-sm text-[#D4AF37] hover:border-[#D4AF37]"
-                      >
-                        Visit site
-                      </a>
-                    </div>
-                  </div>
-                ))}
-
-                {fp.rooms.length > 3 && (
-                  <div className="text-sm text-[#D4AF37] px-1">
-                    + {fp.rooms.length - 3} more room rates
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-        ))}
+                  {hasMore && (
+                    <button
+                      type="button"
+                      onClick={() => toggleFp(idx)}
+                      className="text-sm text-[#D4AF37] hover:text-[#F5DEB3] hover:underline px-1 py-1 rounded focus:outline-none focus-visible:ring-2 focus-visible:ring-[#D4AF37]"
+                    >
+                      {isExpanded
+                        ? "Show less"
+                        : `+ ${rooms.length - ROOMS_INITIAL} more room rates`}
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );

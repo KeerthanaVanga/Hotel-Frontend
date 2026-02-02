@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 import InventoryCard from "../components/inventory/InventoryCard";
 import InventorySkeleton from "../components/inventory/InventorySkeleton";
@@ -10,14 +10,24 @@ import EmptyState from "../components/ui/EmptyState";
 import { searchInventory } from "../api/inventory.api";
 import type { HotelInventory } from "../types/Inventory";
 
+/** Persist search in URL so it survives back navigation and refresh. No Redis needed. */
 export default function InventoryPage() {
-  const [query, setQuery] = useState("");
-  const [searchParams, setSearchParams] = useState<{
-    q: string;
-    checkIn?: string;
-    checkOut?: string;
-    adults?: number;
-  } | null>(null);
+  const [urlParams, setUrlParams] = useSearchParams();
+  const qFromUrl = urlParams.get("q") ?? "";
+  const adultsFromUrl = urlParams.get("adults");
+
+  const [query, setQuery] = useState(qFromUrl);
+
+  useEffect(() => {
+    setQuery(qFromUrl);
+  }, [qFromUrl]);
+
+  const searchParams = qFromUrl
+    ? {
+        q: qFromUrl,
+        adults: adultsFromUrl ? Number(adultsFromUrl) : 2,
+      }
+    : null;
 
   const navigate = useNavigate();
 
@@ -31,7 +41,7 @@ export default function InventoryPage() {
 
   const handleSearch = () => {
     if (!query.trim()) return;
-    setSearchParams({ q: query.trim(), adults: 2 });
+    setUrlParams({ q: query.trim(), adults: "2" });
   };
 
   return (
