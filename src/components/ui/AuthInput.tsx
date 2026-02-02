@@ -62,12 +62,12 @@ export function AuthInput({
         )}
       </div>
 
-      {/* Error Message */}
-      <div className="min-h-5 flex items-center gap-1 text-xs text-red-400">
+      {/* Error Message - fixed height so layout doesn't shift when error appears */}
+      <div className="flex min-h-[1.25rem] items-center gap-1 text-xs text-red-400">
         {touched && error && (
           <>
-            <AlertCircle size={14} />
-            {error}
+            <AlertCircle size={14} className="shrink-0" />
+            <span className="leading-tight">{error}</span>
           </>
         )}
       </div>

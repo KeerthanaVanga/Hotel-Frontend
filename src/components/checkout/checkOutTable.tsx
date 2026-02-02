@@ -8,11 +8,13 @@ const STATUS_STYLE = {
 
 export default function CheckOutTable({
   checkouts,
-  onComplete,
+  onCheckOut,
+  onNotCheckedOut,
   updatingId,
 }: {
   checkouts: CheckOut[];
-  onComplete: (id: string) => void;
+  onCheckOut: (id: string) => void;
+  onNotCheckedOut: (id: string) => void;
   updatingId: string | null;
 }) {
   return (
@@ -54,17 +56,26 @@ export default function CheckOutTable({
                   {c.fromDate} → {c.toDate}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button
-                    onClick={() => onComplete(c.id)}
-                    disabled={updatingId === c.id}
-                    className={`px-3 py-1 text-xs rounded-md border transition ${
-                      updatingId === c.id
-                        ? "border-gray-500 text-gray-400 cursor-not-allowed"
-                        : "border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37] hover:bg-[#D4AF37]/20"
-                    }`}
-                  >
-                    {updatingId === c.id ? "Updating..." : "Update"}
-                  </button>
+                  <div className="flex justify-end gap-2">
+                    <button
+                      onClick={() => onCheckOut(c.id)}
+                      disabled={updatingId === c.id}
+                      className={`px-3 py-1 text-xs rounded-md border transition ${
+                        updatingId === c.id
+                          ? "border-gray-500 text-gray-400 cursor-not-allowed"
+                          : "border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37] hover:bg-[#D4AF37]/20"
+                      }`}
+                    >
+                      {updatingId === c.id ? "Updating..." : "Check Out"}
+                    </button>
+                    <button
+                      onClick={() => onNotCheckedOut(c.id)}
+                      disabled={updatingId === c.id}
+                      className="px-3 py-1 text-xs rounded-md border border-[#3A1A22] text-[#F5DEB3]/80 hover:bg-white/5 hover:text-[#F5DEB3] transition"
+                    >
+                      Not checked-out
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -99,7 +110,7 @@ export default function CheckOutTable({
 
             <div className="flex gap-2 pt-2">
               <button
-                onClick={() => onComplete(c.id)}
+                onClick={() => onCheckOut(c.id)}
                 disabled={updatingId === c.id}
                 className={`flex-1 px-3 py-2 text-xs rounded-md border transition ${
                   updatingId === c.id
@@ -107,7 +118,14 @@ export default function CheckOutTable({
                     : "border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37] hover:bg-[#D4AF37]/20"
                 }`}
               >
-                {updatingId === c.id ? "Updating..." : "Update"}
+                {updatingId === c.id ? "Updating..." : "Check Out"}
+              </button>
+              <button
+                onClick={() => onNotCheckedOut(c.id)}
+                disabled={updatingId === c.id}
+                className="flex-1 px-3 py-2 text-xs rounded-md border border-[#3A1A22] text-[#F5DEB3]/80 hover:bg-white/5"
+              >
+                Not checked-out
               </button>
             </div>
           </div>

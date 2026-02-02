@@ -1,14 +1,54 @@
 import { useState } from "react";
-import type { Payment } from "../../types/Payment";
+import type {
+  Payment,
+  PaymentMethodOption,
+  PaymentStatusOption,
+} from "../../types/Payment";
+
+const PAYMENT_METHOD_OPTIONS: PaymentMethodOption[] = [
+  "partial_online",
+  "full_online",
+  "offline",
+];
+
+const PAYMENT_STATUS_OPTIONS: PaymentStatusOption[] = [
+  "partial_paid",
+  "paid",
+  "pending",
+];
 
 interface Props {
   payment: Payment;
+  isSaving?: boolean;
   onClose: () => void;
-  onSave: (payment: Payment) => void;
+  onSave: (payload: {
+    bill_paid_amount: number;
+    method: PaymentMethodOption;
+    status: PaymentStatusOption;
+  }) => void;
 }
 
-export default function PaymentEditModal({ payment, onClose, onSave }: Props) {
-  const [form, setForm] = useState<Payment>(payment);
+export default function PaymentEditModal({
+  payment,
+  isSaving = false,
+  onClose,
+  onSave,
+}: Props) {
+  const [billPaid, setBillPaid] = useState(payment.billPaid);
+  const [method, setMethod] = useState<PaymentMethodOption>(
+    (payment.paymentMethod as PaymentMethodOption) || "offline"
+  );
+  const [status, setStatus] = useState<PaymentStatusOption>(
+    (payment.status as PaymentStatusOption) || "pending"
+  );
+
+  const handleSave = () => {
+    onSave({
+      bill_paid_amount: Number(billPaid),
+      method,
+      status,
+    });
+  };
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center">
@@ -16,48 +56,50 @@ export default function PaymentEditModal({ payment, onClose, onSave }: Props) {
         {/* Header */}
         <h2 className="text-lg font-serif text-[#F5DEB3]">Edit Payment</h2>
 
-        {/* Paid Amount */}
+        {/* Amount to add to paid (backend adds this to existing paid) */}
         <Input
-          label="Paid Amount"
+          label="Amount paying now"
           type="number"
-          value={form.billPaid}
-          onChange={(v) => setForm({ ...form, billPaid: Number(v) })}
+          value={billPaid}
+          onChange={(v) => setBillPaid(Number(v) || 0)}
         />
 
         {/* Payment Method */}
-        <Select
-          label="Payment Method"
-          value={form.paymentMethod}
-          options={["Cash", "Card", "UPI", "Bank Transfer"]}
-          onChange={(v) => setForm({ ...form, paymentMethod: v })}
+        <Select<PaymentMethodOption>
+          label="Payment method"
+          value={method}
+          options={PAYMENT_METHOD_OPTIONS}
+          onChange={setMethod}
         />
 
         {/* Payment Status */}
-        <Select
-          label="Payment Status"
-          value={form.status}
-          options={["success", "failed", "pending", "partial"]}
-          onChange={(v) => setForm({ ...form, status: v })}
+        <Select<PaymentStatusOption>
+          label="Payment status"
+          value={status}
+          options={PAYMENT_STATUS_OPTIONS}
+          onChange={setStatus}
         />
 
         {/* Actions */}
         <div className="flex justify-end gap-3 pt-4">
           <button
             onClick={onClose}
-            className="text-sm text-[#F5DEB3]/70 hover:text-[#F5DEB3]"
+            disabled={isSaving}
+            className="text-sm text-[#F5DEB3]/70 hover:text-[#F5DEB3] disabled:opacity-50"
           >
             Cancel
           </button>
 
           <button
-            onClick={() => onSave(form)}
+            onClick={handleSave}
+            disabled={isSaving}
             className="
               rounded-md bg-[#D4AF37] px-5 py-2
               text-sm font-semibold text-[#1B0F12]
-              hover:bg-[#E5C453]
+              hover:bg-[#E5C453] disabled:opacity-50 disabled:pointer-events-none
             "
           >
-            Save
+            {isSaving ? "Saving..." : "Save"}
           </button>
         </div>
       </div>

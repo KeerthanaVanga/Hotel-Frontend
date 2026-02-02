@@ -7,6 +7,7 @@ import CheckOutTable from "../components/checkout/checkOutTable";
 import CheckOutTableSkeleton from "../components/checkout/checkOutTableSkeleton";
 import Pagination from "../components/ui/Pagination";
 import EmptyState from "../components/ui/EmptyState";
+import ConfirmModal from "../components/ui/ConfirmModel";
 import { getTodayCheckOuts } from "../api/checkout.api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateBookingStatus } from "../api/checkins.api";
@@ -67,19 +68,34 @@ export default function CheckOutPage() {
   const queryClient = useQueryClient();
 
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [confirm, setConfirm] = useState<{
+    open: boolean;
+    id: string | null;
+    action: "check-out" | "not-checked-out";
+  }>({ open: false, id: null, action: "check-out" });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: string }) =>
       updateBookingStatus(id, status),
     onSuccess: (response) => {
+      queryClient.invalidateQueries({ queryKey: ["checkouts", "today"] });
       queryClient.invalidateQueries({ queryKey: ["checkins", "today"] });
       setUpdatingId(null);
+      setConfirm({ open: false, id: null, action: "check-out" });
       showToast("success", response.message);
     },
     onError: () => {
       setUpdatingId(null);
     },
   });
+
+  const handleConfirmAction = () => {
+    if (!confirm.id) return;
+    setUpdatingId(confirm.id);
+    const status =
+      confirm.action === "check-out" ? "checked out" : "checked in";
+    updateMutation.mutate({ id: confirm.id, status });
+  };
 
   const totalPages = Math.ceil(checkouts.length / ITEMS_PER_PAGE);
 
@@ -118,10 +134,34 @@ export default function CheckOutPage() {
           <CheckOutTable
             checkouts={paginated}
             updatingId={updatingId}
-            onComplete={(id) => {
-              setUpdatingId(id);
-              updateMutation.mutate({ id, status: "checked out" });
-            }}
+            onCheckOut={(id) =>
+              setConfirm({ open: true, id, action: "check-out" })
+            }
+            onNotCheckedOut={(id) =>
+              setConfirm({ open: true, id, action: "not-checked-out" })
+            }
+          />
+
+          <ConfirmModal
+            open={confirm.open}
+            title={
+              confirm.action === "check-out"
+                ? "Confirm check-out?"
+                : "Confirm not checked-out?"
+            }
+            description={
+              confirm.action === "check-out"
+                ? "Mark this guest as checked out?"
+                : "Confirm that this guest has not checked out. Booking will remain as checked in."
+            }
+            confirmText={
+              updateMutation.isPending ? "Updating..." : "Yes, confirm"
+            }
+            cancelText="Cancel"
+            onCancel={() =>
+              setConfirm({ open: false, id: null, action: "check-out" })
+            }
+            onConfirm={handleConfirmAction}
           />
 
           {totalPages > 1 && (

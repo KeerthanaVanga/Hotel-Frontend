@@ -1,6 +1,5 @@
-export type PaymentMethod = "Cash" | "Card" | "UPI" | "Bank Transfer";
-
-export type PaymentStatus = "pending" | "success" | "failed" | "partial";
+export type PaymentMethodOption = "partial_online" | "full_online" | "offline";
+export type PaymentStatusOption = "partial_paid" | "paid" | "pending";
 
 export type Payment = {
   id: string;
@@ -12,6 +11,8 @@ export type Payment = {
   perNightPrice: number;
   billGenerated: number;
   billPaid: number;
-  paymentMethod: string; // ✅ FIXED
-  status: string; // ✅ FIXED
+  /** Remaining to pay = billGenerated - billPaid */
+  remainingToPay: number;
+  paymentMethod: string;
+  status: string;
 };

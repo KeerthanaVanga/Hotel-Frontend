@@ -11,9 +11,11 @@ const STATUS_STYLE: Record<string, string> = {
 export default function BookingsTable({
   bookings,
   onCancel,
+  onReschedule,
 }: {
   bookings: BookingRow[];
   onCancel: (id: string) => void;
+  onReschedule: (booking: BookingRow) => void;
 }) {
   return (
     <>
@@ -56,12 +58,22 @@ export default function BookingsTable({
                   {b.fromDate} → {b.toDate}
                 </td>
                 <td className="px-4 py-3 text-right">
-                  <button
-                    onClick={() => onCancel(b.id)}
-                    className="text-sm text-red-400 hover:text-red-300"
-                  >
-                    Cancel
-                  </button>
+                  {b.status !== "cancelled" && (
+                    <div className="flex items-center justify-end gap-2">
+                      <button
+                        onClick={() => onReschedule(b)}
+                        className="text-sm text-[#D4AF37] hover:text-[#D4AF37]/80"
+                      >
+                        Reschedule
+                      </button>
+                      <button
+                        onClick={() => onCancel(b.id)}
+                        className="text-sm text-red-400 hover:text-red-300"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  )}
                 </td>
               </tr>
             ))}
@@ -94,12 +106,22 @@ export default function BookingsTable({
               {b.fromDate} → {b.toDate}
             </p>
 
-            <button
-              onClick={() => onCancel(b.id)}
-              className="mt-2 w-full rounded-md border border-[#3A1A22] py-2 text-sm text-red-400 hover:border-red-400"
-            >
-              Cancel Booking
-            </button>
+            {b.status !== "cancelled" && (
+              <div className="mt-2 flex gap-2">
+                <button
+                  onClick={() => onReschedule(b)}
+                  className="flex-1 rounded-md border border-[#D4AF37] py-2 text-sm text-[#D4AF37] hover:bg-[#D4AF37]/10"
+                >
+                  Reschedule
+                </button>
+                <button
+                  onClick={() => onCancel(b.id)}
+                  className="flex-1 rounded-md border border-[#3A1A22] py-2 text-sm text-red-400 hover:border-red-400"
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
           </div>
         ))}
       </div>

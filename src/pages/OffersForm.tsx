@@ -11,6 +11,16 @@ function toDateOnly(iso?: string | null) {
   return iso.split("T")[0] ?? iso;
 }
 
+const emptyForm = {
+  roomId: "" as number | "",
+  discount: "" as number | "",
+  offerPrice: "",
+  startDate: "",
+  endDate: "",
+  active: true,
+  title: "",
+};
+
 export default function OfferFormPage() {
   const { offerId } = useParams();
   const numericOfferId = offerId ? Number(offerId) : null;
@@ -19,12 +29,7 @@ export default function OfferFormPage() {
   const navigate = useNavigate();
   const qc = useQueryClient();
 
-  const [roomId, setRoomId] = useState<number | "">("");
-  const [discount, setDiscount] = useState<number | "">("");
-  const [startDate, setStartDate] = useState<string>("");
-  const [endDate, setEndDate] = useState<string>("");
-  const [active, setActive] = useState(true);
-  const [title, setTitle] = useState("");
+  const [form, setForm] = useState(emptyForm);
 
   const roomsQ = useQuery({
     queryKey: ["rooms", "for-offers"],
@@ -38,34 +43,45 @@ export default function OfferFormPage() {
     enabled: !!numericOfferId,
   });
 
-  // Prefill on edit
+  // Prefill on edit: defer setState so it's not synchronous in the effect (avoids cascading renders)
   useEffect(() => {
-    console.log(offerQ.data);
     if (!offerQ.data) return;
-    setRoomId(offerQ.data.room_id);
-    setDiscount(offerQ.data.discount_percent);
-    setStartDate(toDateOnly(offerQ.data.start_date));
-    setEndDate(toDateOnly(offerQ.data.end_date));
-    setActive(Boolean(offerQ.data.is_active ?? true));
-    setTitle(offerQ.data.title ?? "");
+    let cancelled = false;
+    const data = offerQ.data;
+    queueMicrotask(() => {
+      if (cancelled) return;
+      setForm({
+        roomId: data.room_id,
+        discount: data.discount_percent,
+        offerPrice: data.offer_price != null ? String(data.offer_price) : "",
+        startDate: toDateOnly(data.start_date),
+        endDate: toDateOnly(data.end_date),
+        active: Boolean(data.is_active ?? true),
+        title: data.title ?? "",
+      });
+    });
+    return () => {
+      cancelled = true;
+    };
   }, [offerQ.data]);
 
   const selectedRoom: ApiRoom | undefined = useMemo(() => {
-    return roomsQ.data?.find((r: ApiRoom) => r.room_id === roomId);
-  }, [roomsQ.data, roomId]);
+    return roomsQ.data?.find((r: ApiRoom) => r.room_id === form.roomId);
+  }, [roomsQ.data, form.roomId]);
 
   const mutation = useMutation({
     mutationFn: async () => {
-      if (!roomId || !discount)
+      if (!form.roomId || !form.discount)
         throw new Error("Room and discount are required");
 
       const payload = {
-        title: title,
-        room_id: Number(roomId),
-        discount_percent: Number(discount),
-        start_date: startDate ? startDate : null,
-        end_date: endDate ? endDate : null,
-        is_active: active,
+        title: form.title,
+        room_id: Number(form.roomId),
+        discount_percent: Number(form.discount),
+        offer_price: form.offerPrice.trim() ? Number(form.offerPrice) : null,
+        start_date: form.startDate ? form.startDate : null,
+        end_date: form.endDate ? form.endDate : null,
+        is_active: form.active,
       };
 
       if (isEdit && offerId) {
@@ -133,10 +149,8 @@ export default function OfferFormPage() {
         <label className="text-sm text-[#F5DEB3]/70">Offer Title</label>
         <input
           type="text"
-          value={title}
-          onChange={(e) => {
-            setTitle(e.target.value);
-          }}
+          value={form.title}
+          onChange={(e) => setForm((prev) => ({ ...prev, title: e.target.value }))}
           placeholder="e.g. Standard Offer"
           className="w-full rounded-lg border border-[#3A1A22] bg-[#1F1216] px-3 py-2 text-sm text-[#F5DEB3] outline-none"
         />
@@ -145,9 +159,12 @@ export default function OfferFormPage() {
           <div className="space-y-1">
             <label className="text-sm text-[#F5DEB3]/70">Room</label>
             <select
-              value={roomId}
+              value={form.roomId}
               onChange={(e) =>
-                setRoomId(e.target.value ? Number(e.target.value) : "")
+                setForm((prev) => ({
+                  ...prev,
+                  roomId: e.target.value ? Number(e.target.value) : "",
+                }))
               }
               className="w-full rounded-lg border border-[#3A1A22] bg-[#1F1216] px-3 py-2 text-sm text-[#F5DEB3] outline-none"
             >
@@ -167,12 +184,31 @@ export default function OfferFormPage() {
               type="number"
               min={1}
               max={100}
-              value={discount}
+              value={form.discount}
               onChange={(e) =>
-                setDiscount(e.target.value ? Number(e.target.value) : "")
+                setForm((prev) => ({
+                  ...prev,
+                  discount: e.target.value ? Number(e.target.value) : "",
+                }))
               }
               className="w-full rounded-lg border border-[#3A1A22] bg-[#1F1216] px-3 py-2 text-sm text-[#F5DEB3] outline-none"
               placeholder="e.g. 25"
+            />
+          </div>
+
+          {/* Offer price */}
+          <div className="space-y-1 md:col-span-2">
+            <label className="text-sm text-[#F5DEB3]/70">
+              Offer price per night (₹, optional)
+            </label>
+            <input
+              type="number"
+              min={0}
+              step={0.01}
+              value={form.offerPrice}
+              onChange={(e) => setForm((prev) => ({ ...prev, offerPrice: e.target.value }))}
+              className="w-full rounded-lg border border-[#3A1A22] bg-[#1F1216] px-3 py-2 text-sm text-[#F5DEB3] outline-none"
+              placeholder="e.g. 1500 (leave empty to use discount % only)"
             />
           </div>
 
@@ -183,8 +219,8 @@ export default function OfferFormPage() {
             </label>
             <input
               type="date"
-              value={startDate}
-              onChange={(e) => setStartDate(e.target.value)}
+              value={form.startDate}
+              onChange={(e) => setForm((prev) => ({ ...prev, startDate: e.target.value }))}
               className="w-full rounded-lg border border-[#3A1A22] bg-[#1F1216] px-3 py-2 text-sm text-[#F5DEB3] outline-none"
             />
           </div>
@@ -196,8 +232,8 @@ export default function OfferFormPage() {
             </label>
             <input
               type="date"
-              value={endDate}
-              onChange={(e) => setEndDate(e.target.value)}
+              value={form.endDate}
+              onChange={(e) => setForm((prev) => ({ ...prev, endDate: e.target.value }))}
               className="w-full rounded-lg border border-[#3A1A22] bg-[#1F1216] px-3 py-2 text-sm text-[#F5DEB3] outline-none"
             />
           </div>
@@ -212,14 +248,14 @@ export default function OfferFormPage() {
             </div>
             <button
               type="button"
-              onClick={() => setActive((v) => !v)}
+              onClick={() => setForm((prev) => ({ ...prev, active: !prev.active }))}
               className={`rounded-full px-3 py-1 text-xs font-medium ${
-                active
+                form.active
                   ? "bg-emerald-500/15 text-emerald-400"
                   : "bg-red-500/15 text-red-400"
               }`}
             >
-              {active ? "active" : "inactive"}
+              {form.active ? "active" : "inactive"}
             </button>
           </div>
 
@@ -241,12 +277,20 @@ export default function OfferFormPage() {
               </p>
               <p className="text-[#F5DEB3]">
                 Discount:{" "}
-                <span className="text-[#F5DEB3]/80">{discount || 0}%</span>
+                <span className="text-[#F5DEB3]/80">{form.discount || 0}%</span>
               </p>
-              <p className="text-[#F5DEB3]/70 text-xs mt-2">
-                Offer price will be calculated automatically by the database
-                trigger.
-              </p>
+              {form.offerPrice.trim() && (
+                <p className="text-[#F5DEB3]">
+                  Offer price:{" "}
+                  <span className="text-[#D4AF37]">₹{form.offerPrice}/night</span>
+                </p>
+              )}
+              {!form.offerPrice.trim() && (
+                <p className="text-[#F5DEB3]/70 text-xs mt-2">
+                  Set offer price above, or leave empty to rely on discount % only
+                  (if supported by your setup).
+                </p>
+              )}
             </div>
           </div>
         </div>

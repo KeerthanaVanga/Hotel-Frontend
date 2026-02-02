@@ -1,5 +1,6 @@
 export type BookingRow = {
   id: string;
+  room_id: number;
   guestName: string;
   roomType: string;
   roomName: string;

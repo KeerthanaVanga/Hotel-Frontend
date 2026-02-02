@@ -42,3 +42,29 @@ export async function getPayments() {
 
   return res.data;
 }
+
+export type UpdatePaymentPayload = {
+  bill_paid_amount: number;
+  method: "partial_online" | "full_online" | "offline";
+  status: "partial_paid" | "paid" | "pending";
+};
+
+export type UpdatePaymentResponse = {
+  success: boolean;
+  data: ApiPayment;
+  message: string;
+};
+
+export async function updatePayment(
+  paymentId: string,
+  payload: UpdatePaymentPayload
+) {
+  const res = await axiosInstance.patch<UpdatePaymentResponse>(
+    `/payments/payments/${paymentId}`,
+    payload
+  );
+  if (!res.data.success) {
+    throw new Error(res.data.message || "Failed to update payment");
+  }
+  return res.data;
+}

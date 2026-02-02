@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, Outlet } from "react-router-dom";
 import { lazy } from "react";
 import PrivateRoute from "./PrivateRoute";
 import PublicRoute from "./PublicRoute";
@@ -18,6 +18,8 @@ const ReportsPage = lazy(() => import("../pages/Reports"));
 const UsersPage = lazy(() => import("../pages/Users"));
 const RoomsPage = lazy(() => import("../pages/Rooms"));
 const BookingsPage = lazy(() => import("../pages/Bookings"));
+const CreateBookingPage = lazy(() => import("../pages/CreateBooking"));
+const RescheduleBookingPage = lazy(() => import("../pages/RescheduleBooking"));
 const PaymentsPage = lazy(() => import("../pages/Payments"));
 const ReviewsPage = lazy(() => import("../pages/Reviews"));
 const WhatsAppBotPage = lazy(() => import("../pages/Whatsapp"));
@@ -28,6 +30,8 @@ const RoomsEditPage = lazy(() => import("../components/rooms/RoomFormPage"));
 const InventoryDetailsPage = lazy(() => import("../pages/InventoryDetails"));
 const OffersPage = lazy(() => import("../pages/OffersPage"));
 const OffersFormPage = lazy(() => import("../pages/OffersForm"));
+const ProfilePage = lazy(() => import("../pages/Profile"));
+const SettingsPage = lazy(() => import("../pages/Settings"));
 
 const router = createBrowserRouter([
   {
@@ -103,7 +107,21 @@ const router = createBrowserRouter([
               },
               {
                 path: "/bookings",
-                element: <BookingsPage />,
+                element: <Outlet />,
+                children: [
+                  {
+                    index: true,
+                    element: <BookingsPage />,
+                  },
+                  {
+                    path: "new",
+                    element: <CreateBookingPage />,
+                  },
+                  {
+                    path: ":id/reschedule",
+                    element: <RescheduleBookingPage />,
+                  },
+                ],
               },
               {
                 path: "/offers",
@@ -133,6 +151,14 @@ const router = createBrowserRouter([
               {
                 path: "/whatsapp",
                 element: <WhatsAppBotPage />,
+              },
+              {
+                path: "/profile",
+                element: <ProfilePage />,
+              },
+              {
+                path: "/settings",
+                element: <SettingsPage />,
               },
             ],
           },

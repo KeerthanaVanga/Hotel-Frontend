@@ -22,3 +22,52 @@ export const logout = () => {
 export const me = () => {
   return api.get("/auth/me");
 };
+
+export interface AdminProfile {
+  id: number;
+  username: string;
+  email: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export const getProfile = () => {
+  return api.get<{ profile: AdminProfile }>("/auth/profile");
+};
+
+export const changePassword = (data: {
+  currentPassword: string;
+  newPassword: string;
+}) => {
+  return api.post("/auth/change-password", data);
+};
+
+export interface AdminListItem {
+  id: number;
+  username: string;
+  email: string;
+  createdAt: string;
+}
+
+export const getAdmins = () => {
+  return api.get<{ admins: AdminListItem[] }>("/auth/admins");
+};
+
+export const createAdminApi = (data: {
+  username: string;
+  email: string;
+  password: string;
+}) => {
+  return api.post("/auth/admins", data);
+};
+
+export const updateAdminApi = (
+  id: number,
+  data: { username?: string; email?: string; password?: string }
+) => {
+  return api.patch(`/auth/admins/${id}`, data);
+};
+
+export const deleteAdminApi = (id: number) => {
+  return api.delete(`/auth/admins/${id}`);
+};

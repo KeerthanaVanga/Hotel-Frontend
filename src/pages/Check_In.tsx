@@ -7,6 +7,7 @@ import CheckInTable from "../components/checkin/CheckInTable";
 import CheckInTableSkeleton from "../components/checkin/CheckInTableSkeleton";
 import Pagination from "../components/ui/Pagination";
 import EmptyState from "../components/ui/EmptyState";
+import ConfirmModal from "../components/ui/ConfirmModel";
 import { getTodayCheckIns } from "../api/checkins.api";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { updateBookingStatus } from "../api/checkins.api";
@@ -53,6 +54,11 @@ export default function CheckInPage() {
   const queryClient = useQueryClient();
 
   const [updatingId, setUpdatingId] = useState<string | null>(null);
+  const [confirm, setConfirm] = useState<{
+    open: boolean;
+    id: string | null;
+    action: "check-in" | "not-checked-in";
+  }>({ open: false, id: null, action: "check-in" });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, status }: { id: string; status: string }) =>
@@ -60,12 +66,20 @@ export default function CheckInPage() {
     onSuccess: (response) => {
       queryClient.invalidateQueries({ queryKey: ["checkins", "today"] });
       setUpdatingId(null);
+      setConfirm({ open: false, id: null, action: "check-in" });
       showToast("success", response.message);
     },
     onError: () => {
       setUpdatingId(null);
     },
   });
+
+  const handleConfirmAction = () => {
+    if (!confirm.id) return;
+    setUpdatingId(confirm.id);
+    const status = confirm.action === "check-in" ? "checked in" : "confirmed";
+    updateMutation.mutate({ id: confirm.id, status });
+  };
 
   const totalPages = Math.ceil(checkins.length / ITEMS_PER_PAGE);
 
@@ -104,10 +118,30 @@ export default function CheckInPage() {
           <CheckInTable
             checkins={paginated}
             updatingId={updatingId}
-            onUpdate={(id) => {
-              setUpdatingId(id);
-              updateMutation.mutate({ id, status: "checked in" });
-            }}
+            onCheckIn={(id) => setConfirm({ open: true, id, action: "check-in" })}
+            onNotCheckedIn={(id) =>
+              setConfirm({ open: true, id, action: "not-checked-in" })
+            }
+          />
+
+          <ConfirmModal
+            open={confirm.open}
+            title={
+              confirm.action === "check-in"
+                ? "Confirm check-in?"
+                : "Confirm not checked-in?"
+            }
+            description={
+              confirm.action === "check-in"
+                ? "Mark this guest as checked in?"
+                : "Confirm that this guest has not checked in. Booking will remain as confirmed."
+            }
+            confirmText={
+              updateMutation.isPending ? "Updating..." : "Yes, confirm"
+            }
+            cancelText="Cancel"
+            onCancel={() => setConfirm({ open: false, id: null, action: "check-in" })}
+            onConfirm={handleConfirmAction}
           />
 
           {totalPages > 1 && (

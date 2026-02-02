@@ -2,11 +2,13 @@ import type { CheckIn } from "../../types/CheckIn";
 
 export default function CheckInTable({
   checkins,
-  onUpdate,
+  onCheckIn,
+  onNotCheckedIn,
   updatingId,
 }: {
   checkins: CheckIn[];
-  onUpdate: (id: string) => void;
+  onCheckIn: (id: string) => void;
+  onNotCheckedIn: (id: string) => void;
   updatingId: string | null;
 }) {
   return (
@@ -50,7 +52,7 @@ export default function CheckInTable({
                 <td className="px-4 py-3 text-right">
                   <div className="flex justify-end gap-2">
                     <button
-                      onClick={() => onUpdate(c.id)}
+                      onClick={() => onCheckIn(c.id)}
                       disabled={updatingId === c.id}
                       className={`px-3 py-1 text-xs rounded-md border transition ${
                         updatingId === c.id
@@ -58,7 +60,14 @@ export default function CheckInTable({
                           : "border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37] hover:bg-[#D4AF37]/20"
                       }`}
                     >
-                      {updatingId === c.id ? "Updating..." : "Update"}
+                      {updatingId === c.id ? "Updating..." : "Check In"}
+                    </button>
+                    <button
+                      onClick={() => onNotCheckedIn(c.id)}
+                      disabled={updatingId === c.id}
+                      className="px-3 py-1 text-xs rounded-md border border-[#3A1A22] text-[#F5DEB3]/80 hover:bg-white/5 hover:text-[#F5DEB3] transition"
+                    >
+                      Not checked-in
                     </button>
                   </div>
                 </td>
@@ -92,7 +101,7 @@ export default function CheckInTable({
             </p>
             <div className="flex gap-2 pt-2">
               <button
-                onClick={() => onUpdate(c.id)}
+                onClick={() => onCheckIn(c.id)}
                 disabled={updatingId === c.id}
                 className={`flex-1 px-3 py-2 text-xs rounded-md border transition ${
                   updatingId === c.id
@@ -100,7 +109,14 @@ export default function CheckInTable({
                     : "border-[#D4AF37] bg-[#D4AF37]/10 text-[#D4AF37] hover:bg-[#D4AF37]/20"
                 }`}
               >
-                {updatingId === c.id ? "Updating..." : "Update"}
+                {updatingId === c.id ? "Updating..." : "Check In"}
+              </button>
+              <button
+                onClick={() => onNotCheckedIn(c.id)}
+                disabled={updatingId === c.id}
+                className="flex-1 px-3 py-2 text-xs rounded-md border border-[#3A1A22] text-[#F5DEB3]/80 hover:bg-white/5"
+              >
+                Not checked-in
               </button>
             </div>
           </div>

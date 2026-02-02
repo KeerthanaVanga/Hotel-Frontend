@@ -1,16 +1,17 @@
 import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { CreditCard } from "lucide-react";
 
 import type { Payment } from "../types/Payment";
 import PaymentsTable from "../components/payments/PaymentsTable";
 import PaymentEditModal from "../components/payments/PaymentEditModal";
 import PaymentsTableSkeleton from "../components/payments/PaymentTableSkeleton";
-import PaymentEditSkeleton from "../components/payments/PaymentEditSkeleton";
 import Pagination from "../components/ui/Pagination";
 import EmptyState from "../components/ui/EmptyState";
+import { useToast } from "../components/layout/ToastProvider";
 
-import { getPayments } from "../api/payments.ap";
+import { getPayments, updatePayment } from "../api/payments.ap";
+import type { UpdatePaymentPayload } from "../api/payments.ap";
 
 const ITEMS_PER_PAGE = 5;
 
@@ -28,7 +29,8 @@ function dateOnly(iso?: string) {
 export default function PaymentsPage() {
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Payment | null>(null);
-  const [editing, setEditing] = useState(false);
+  const queryClient = useQueryClient();
+  const { showToast } = useToast();
 
   const {
     data: payments = [],
@@ -56,10 +58,26 @@ export default function PaymentsPage() {
           perNightPrice: perNight,
           billGenerated,
           billPaid,
+          remainingToPay: Math.max(0, billGenerated - billPaid),
           paymentMethod: p.method,
           status: p.status,
         };
       }),
+  });
+
+  const updatePaymentMutation = useMutation({
+    mutationFn: ({
+      paymentId,
+      payload,
+    }: {
+      paymentId: string;
+      payload: UpdatePaymentPayload;
+    }) => updatePayment(paymentId, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["payments"] });
+      setSelected(null);
+      showToast("success", "Saved");
+    },
   });
 
   /* ---------- Pagination ---------- */
@@ -100,15 +118,7 @@ export default function PaymentsPage() {
         <>
           <PaymentsTable
             payments={paginatedPayments}
-            onEdit={(payment) => {
-              setSelected(payment);
-              setEditing(true);
-
-              // simulate fetch details
-              setTimeout(() => {
-                setEditing(false);
-              }, 600);
-            }}
+            onEdit={(payment) => setSelected(payment)}
           />
 
           {totalPages > 1 && (
@@ -121,19 +131,19 @@ export default function PaymentsPage() {
         </>
       )}
 
-      {selected &&
-        (editing ? (
-          <PaymentEditSkeleton />
-        ) : (
-          <PaymentEditModal
-            payment={selected}
-            onClose={() => setSelected(null)}
-            onSave={() => {
-              // UI-only save for now
-              setSelected(null);
-            }}
-          />
-        ))}
+      {selected && (
+        <PaymentEditModal
+          payment={selected}
+          isSaving={updatePaymentMutation.isPending}
+          onClose={() => setSelected(null)}
+          onSave={(payload) => {
+            updatePaymentMutation.mutate({
+              paymentId: selected.id,
+              payload,
+            });
+          }}
+        />
+      )}
     </section>
   );
 }

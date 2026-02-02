@@ -23,6 +23,7 @@ export default function PaymentsTable({
               <th className="px-4 py-3">Per Night</th>
               <th className="px-4 py-3">Total</th>
               <th className="px-4 py-3">Paid</th>
+              <th className="px-4 py-3">Remaining to pay</th>
               <th className="px-4 py-3">Method</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3 text-right">Action</th>
@@ -40,6 +41,7 @@ export default function PaymentsTable({
                 <td className="px-4 py-3 text-center">₹{p.perNightPrice}</td>
                 <td className="px-4 py-3 text-center">₹{p.billGenerated}</td>
                 <td className="px-4 py-3 text-center">₹{p.billPaid}</td>
+                <td className="px-4 py-3 text-center">₹{p.remainingToPay}</td>
                 <td className="px-4 py-3 text-center">{p.paymentMethod}</td>
                 <td className="px-4 py-3 text-center">
                   <span
@@ -85,9 +87,10 @@ export default function PaymentsTable({
               <p>Booking: {p.bookingDate}</p>
               <p>Payment: {p.paymentDate}</p>
               <p>Nights: {p.nights}</p>
-              <p>Per night: ${p.perNightPrice}</p>
-              <p>Total: ${p.billGenerated}</p>
-              <p>Paid: ${p.billPaid}</p>
+              <p>Per night: ₹{p.perNightPrice}</p>
+              <p>Total: ₹{p.billGenerated}</p>
+              <p>Paid: ₹{p.billPaid}</p>
+              <p>Remaining: ₹{p.remainingToPay}</p>
               <p>Method: {p.paymentMethod}</p>
             </div>
 
