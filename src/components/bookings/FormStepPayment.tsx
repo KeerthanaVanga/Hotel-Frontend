@@ -4,10 +4,7 @@ import { useQuery } from "@tanstack/react-query";
 import { getRooms } from "../../api/rooms.api";
 import { getOffers } from "../../api/offers.api";
 import type { CreateBookingFormValues } from "../../types/CreateBookingForm";
-import {
-  getPriceAndNights,
-  PAYMENT_OPTIONS,
-} from "../../utils/booking";
+import { getPriceAndNights, PAYMENT_OPTIONS } from "../../utils/booking";
 
 export type FormStepPaymentProps = Pick<
   FormikProps<CreateBookingFormValues>,
@@ -31,20 +28,26 @@ export function FormStepPayment({
   });
   const rooms = roomsData?.data ?? [];
   const offers = Array.isArray(offersData) ? offersData : [];
-  const { originalPricePerNight, offerPricePerNight, pricePerNight, nights, total, isOffer } =
-    getPriceAndNights(
-      values.room_id,
-      values.check_in,
-      values.check_out,
-      rooms,
-      offers.map((o) => ({
-        room_id: o.room_id,
-        offer_price: o.offer_price,
-        start_date: o.start_date,
-        end_date: o.end_date,
-        is_active: o.is_active,
-      }))
-    );
+  const {
+    originalPricePerNight,
+    offerPricePerNight,
+    pricePerNight,
+    nights,
+    total,
+    isOffer,
+  } = getPriceAndNights(
+    values.room_id,
+    values.check_in,
+    values.check_out,
+    rooms,
+    offers.map((o) => ({
+      room_id: o.room_id,
+      offer_price: o.offer_price,
+      start_date: o.start_date,
+      end_date: o.end_date,
+      is_active: o.is_active,
+    })),
+  );
 
   const selectedRoom = rooms.find((r) => r.room_id === Number(values.room_id));
   const roomName = selectedRoom?.room_name || selectedRoom?.room_type || "—";
@@ -68,25 +71,35 @@ export function FormStepPayment({
           </div>
           <div className="flex justify-between gap-2 text-[#F5DEB3]/80 sm:flex-row">
             <span>Check-in</span>
-            <span className="text-right text-[#F5DEB3]">{checkInFormatted}</span>
+            <span className="text-right text-[#F5DEB3]">
+              {checkInFormatted}
+            </span>
           </div>
           <div className="flex justify-between gap-2 text-[#F5DEB3]/80 sm:flex-row">
             <span>Check-out</span>
-            <span className="text-right text-[#F5DEB3]">{checkOutFormatted}</span>
+            <span className="text-right text-[#F5DEB3]">
+              {checkOutFormatted}
+            </span>
           </div>
           <div className="flex justify-between gap-2 text-[#F5DEB3]/80 sm:flex-row">
             <span>Guest</span>
-            <span className="text-right text-[#F5DEB3]">{values.guest_name || "—"}</span>
+            <span className="text-right text-[#F5DEB3]">
+              {values.guest_name || "—"}
+            </span>
           </div>
           {values.guest_email?.trim() && (
             <div className="flex justify-between gap-2 text-[#F5DEB3]/80 sm:flex-row">
               <span>Email</span>
-              <span className="text-right text-[#F5DEB3]">{values.guest_email}</span>
+              <span className="text-right text-[#F5DEB3]">
+                {values.guest_email}
+              </span>
             </div>
           )}
           <div className="flex justify-between gap-2 text-[#F5DEB3]/80 sm:flex-row">
             <span>WhatsApp</span>
-            <span className="text-right text-[#F5DEB3]">{values.whatsapp_number || "—"}</span>
+            <span className="text-right text-[#F5DEB3]">
+              {values.whatsapp_number || "—"}
+            </span>
           </div>
           <div className="flex justify-between gap-2 text-[#F5DEB3]/80 sm:flex-row">
             <span>Adults</span>
@@ -94,7 +107,9 @@ export function FormStepPayment({
           </div>
           <div className="flex justify-between gap-2 text-[#F5DEB3]/80 sm:flex-row">
             <span>Children</span>
-            <span className="text-right text-[#F5DEB3]">{values.children || "0"}</span>
+            <span className="text-right text-[#F5DEB3]">
+              {values.children || "0"}
+            </span>
           </div>
         </div>
         <div className="mt-3 space-y-2 border-t border-[#3A1A22] pt-3 text-sm">
@@ -158,9 +173,45 @@ export function FormStepPayment({
             </label>
           ))}
           <div className="min-h-[1.25rem] text-xs text-red-400">
-            {touched.payment_method && errors.payment_method && errors.payment_method}
+            {touched.payment_method &&
+              errors.payment_method &&
+              errors.payment_method}
           </div>
         </div>
+        {values.payment_method === "partial" && (
+          <div className="mt-3 rounded-lg border border-[#3A1A22] bg-[#241217] p-3">
+            <label className="mb-1 block text-sm text-[#F5DEB3]/80">
+              Amount to pay now
+            </label>
+
+            <input
+              type="number"
+              min={1}
+              max={total}
+              placeholder="Enter amount"
+              value={values.partial_amount ?? ""}
+              onChange={(e) =>
+                setFieldValue(
+                  "partial_amount",
+                  e.target.value === "" ? "" : Number(e.target.value),
+                )
+              }
+              onBlur={() => setFieldTouched("partial_amount", true)}
+              className="w-full rounded-md border border-[#3A1A22] bg-[#1b0e12] px-3 py-2 text-[#F5DEB3] outline-none focus:border-[#D4AF37]"
+            />
+
+            <p className="mt-1 text-xs text-[#F5DEB3]/60">
+              Remaining amount: ₹
+              {(total - (Number(values.partial_amount) || 0)).toLocaleString()}
+            </p>
+
+            {touched.partial_amount && errors.partial_amount && (
+              <p className="mt-1 text-xs text-red-400">
+                {errors.partial_amount}
+              </p>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

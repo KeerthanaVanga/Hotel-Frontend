@@ -47,6 +47,9 @@ export default function CreateBookingPage() {
                 vals.children === "" ? undefined : Number(vals.children),
               payment_method: vals.payment_method,
             };
+            if (vals.payment_method === "partial") {
+              payload.partial_amount = Number(vals.partial_amount);
+            }
             if (vals.guest_type === "existing" && vals.selected_user_id) {
               payload.user_id = Number(vals.selected_user_id);
             }

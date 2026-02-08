@@ -13,6 +13,7 @@ export type CreateBookingFormValues = {
   adults: string;
   children: string;
   payment_method: "online" | "partial" | "offline";
+  partial_amount?: number;
 };
 
 export const INITIAL_CREATE_BOOKING_FORM: CreateBookingFormValues = {

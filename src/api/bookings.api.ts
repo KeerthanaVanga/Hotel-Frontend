@@ -43,7 +43,8 @@ export type GetBookingsResponse = {
 };
 
 export async function getUpcomingBookings() {
-  const res = await axiosInstance.get<GetBookingsResponse>("/bookings/upcoming");
+  const res =
+    await axiosInstance.get<GetBookingsResponse>("/bookings/upcoming");
 
   if (!res.data.success) {
     throw new Error("Failed to fetch bookings");
@@ -79,7 +80,9 @@ export function bookingDetailToFormValues(
 ): import("../types/CreateBookingForm").CreateBookingFormValues {
   const paymentMethod = b.payments?.[0]?.method;
   const validPayment: "online" | "partial" | "offline" =
-    paymentMethod === "online" || paymentMethod === "partial" || paymentMethod === "offline"
+    paymentMethod === "online" ||
+    paymentMethod === "partial" ||
+    paymentMethod === "offline"
       ? paymentMethod
       : "online";
   return {
@@ -90,7 +93,8 @@ export function bookingDetailToFormValues(
     selected_user_id: b.users?.user_id != null ? String(b.users.user_id) : "",
     guest_name: b.users?.name ?? "",
     guest_email: b.users?.email ?? "",
-    whatsapp_number: b.users?.whatsapp_number != null ? String(b.users.whatsapp_number) : "",
+    whatsapp_number:
+      b.users?.whatsapp_number != null ? String(b.users.whatsapp_number) : "",
     adults: String(b.adults ?? 1),
     children: String(b.children ?? 0),
     payment_method: validPayment,
@@ -132,6 +136,7 @@ export type CreateBookingPayload = {
   adults: number;
   children?: number;
   payment_method: "online" | "partial" | "offline";
+  partial_amount?: number;
 };
 
 export type CreateBookingResponse = {
