@@ -1,9 +1,5 @@
 import * as Yup from "yup";
-import {
-  parseISO,
-  differenceInDays,
-  isWithinInterval,
-} from "date-fns";
+import { parseISO, differenceInDays, isWithinInterval } from "date-fns";
 
 export type CreateBookingStep = 1 | 2 | 3;
 
@@ -18,11 +14,15 @@ export const step1Schema = Yup.object({
   check_in: Yup.string().required("Check-in date is required"),
   check_out: Yup.string()
     .required("Check-out date is required")
-    .test("after-checkin", "Check-out must be after check-in", function (value) {
-      const { check_in } = this.parent;
-      if (!check_in || !value) return true;
-      return new Date(value) > new Date(check_in);
-    }),
+    .test(
+      "after-checkin",
+      "Check-out must be after check-in",
+      function (value) {
+        const { check_in } = this.parent;
+        if (!check_in || !value) return true;
+        return new Date(value) > new Date(check_in);
+      },
+    ),
 });
 
 export const step2Schema = Yup.object({
@@ -97,7 +97,7 @@ export function getPriceAndNights(
   checkIn: string,
   checkOut: string,
   rooms: RoomForPrice[],
-  offers: OfferForPrice[]
+  offers: OfferForPrice[],
 ) {
   const roomIdNum = Number(roomId);
   const room = rooms.find((r) => r.room_id === roomIdNum);
@@ -115,7 +115,9 @@ export function getPriceAndNights(
   const nights = Math.max(1, differenceInDays(checkOutDate, checkInDate));
   const roomPrice = Number(room.price);
 
-  const roomOffers = offers.filter((o) => o.room_id === roomIdNum && o.is_active);
+  const roomOffers = offers.filter(
+    (o) => o.room_id === roomIdNum && o.is_active,
+  );
 
   const activeOffer = roomOffers.find((o) => {
     if (!o.start_date || !o.end_date) return true;

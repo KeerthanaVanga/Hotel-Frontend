@@ -45,7 +45,7 @@ const Sidebar = ({ collapsed, onToggle }: Props) => {
               className="h-8 w-8 rounded-full border border-[#D4AF37] p-1"
             />
             <span className="text-[#D4AF37] font-serif tracking-widest text-sm">
-              GRAND PALACE
+              RAVILA GRAND HOTEL
             </span>
           </div>
         )}
@@ -108,7 +108,7 @@ const Sidebar = ({ collapsed, onToggle }: Props) => {
           // 🟢 Normal bottom links
           return (
             <NavLink
-              key={key}  
+              key={key}
               to={item.path}
               className={({ isActive }) =>
                 `

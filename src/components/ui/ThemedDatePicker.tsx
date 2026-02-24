@@ -27,7 +27,8 @@ export function ThemedDatePicker({
   max,
   placeholder = "Select date",
 }: ThemedDatePickerProps) {
-  const selectedDate = value && isValid(parseISO(value)) ? parseISO(value) : null;
+  const selectedDate =
+    value && isValid(parseISO(value)) ? parseISO(value) : null;
   const minDate = min && isValid(parseISO(min)) ? parseISO(min) : undefined;
   const maxDate = max && isValid(parseISO(max)) ? parseISO(max) : undefined;
 

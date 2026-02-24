@@ -86,7 +86,7 @@ const Navbar = () => {
                 className="h-9 w-9 rounded-full border border-[#D4AF37] p-1"
               />
               <span className="hidden sm:block text-sm tracking-widest text-[#D4AF37] font-serif">
-                GRAND PALACE
+                RAVILA GRAND HOTEL
               </span>
             </div>
 

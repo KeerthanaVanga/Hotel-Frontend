@@ -2,8 +2,8 @@ export type Room = {
   id: string;
   name: string;
   type: string;
-   roomNumber: number;   
-  totalRooms: number; 
+  roomNumber: number;
+  totalRooms: number;
   pricePerNight: number;
   size: string;
   capacity: number;

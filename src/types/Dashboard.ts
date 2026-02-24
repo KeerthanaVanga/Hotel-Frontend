@@ -4,7 +4,7 @@ export type BookingStatusItem = {
 };
 
 export type HourlyBookingPoint = {
-  hour: string;   // "09:00 AM"
+  hour: string; // "09:00 AM"
   count: number;
 };
 
