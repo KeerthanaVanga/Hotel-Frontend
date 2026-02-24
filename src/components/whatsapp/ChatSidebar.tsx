@@ -1,12 +1,13 @@
-import { Search } from "lucide-react";
 import ChatUsersSkeleton from "./ChatUserSkeleton";
 import type { ChatUser } from "../../types/Chat";
+import { Users } from "lucide-react";
 
 interface Props {
   loading: boolean;
   users: ChatUser[];
   selectedUser: ChatUser | null;
   onSelect: (u: ChatUser) => void;
+  handleuser: () => void;
 }
 
 export default function ChatSidebar({
@@ -14,24 +15,35 @@ export default function ChatSidebar({
   users,
   selectedUser,
   onSelect,
+  handleuser,
 }: Props) {
   if (loading) return <ChatUsersSkeleton />;
 
   return (
     <aside className="h-full w-20 lg:w-80 border-r border-[#3A1A22] flex flex-col">
-      {/* Search */}
-      <div className="p-4 shrink-0 sticky top-0 z-20 bg-[#1F1216] border-b border-[#3A1A22]">
-        <div className="flex items-center gap-2 bg-[#241217] px-3 py-2 rounded-lg">
-          <Search size={16} className="text-[#F5DEB3]/50" />
-          <input
-            placeholder="Search"
-            className="bg-transparent text-sm outline-none text-[#F5DEB3] w-full"
-          />
-        </div>
+      {/* DOWNLOAD BUTTON (CENTERED) */}
+      <div className="p-4 flex justify-center border-b border-[#3A1A22]">
+        <button
+          onClick={handleuser}
+          className="
+      flex items-center gap-2
+      px-4 py-2
+      bg-[#D4AF37]
+      text-black
+      rounded-lg
+      font-medium
+      hover:opacity-90
+      transition
+      shadow-md
+    "
+        >
+          <Users size={16} />
+          Download Leads
+        </button>
       </div>
 
       {/* USERS SCROLL */}
-      <div className="flex-1 overflow-y-auto px-2 py-2 space-y-2">
+      <div className="flex-1 overflow-y-auto px-2 py-2 space-y-2 custom-scroll">
         {(users || []).map((u, index) => (
           <button
             key={`user-${index}`}
