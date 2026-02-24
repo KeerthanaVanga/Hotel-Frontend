@@ -4,11 +4,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import AddUserModal from "../components/ui/AddUsersModel";
 import { useToast } from "../components/layout/ToastProvider";
 import Pagination from "../components/ui/Pagination";
-import {
-  getUsers,
-  createUserApi,
-  updateUserApi,
-} from "../api/user.api";
+import { getUsers, createUserApi, updateUserApi } from "../api/user.api";
 import type { AddUserPayload } from "../components/ui/AddUsersModel";
 import EmptyState from "../components/ui/EmptyState";
 import UserCard from "../components/users/UserCard";
@@ -20,6 +16,9 @@ type UIUser = {
   name: string;
   email: string;
   whatsappNumber: string;
+  checkIn: string | null;
+  checkOut: string | null;
+  paymentStatus: string | null;
 };
 
 export default function Users() {
@@ -48,6 +47,9 @@ export default function Users() {
         name: u.name,
         email: u.email,
         whatsappNumber: u.whatsapp_number,
+        checkIn: u.check_in,
+        checkOut: u.check_out,
+        paymentStatus: u.payment_status,
       })),
   });
 
@@ -151,7 +153,10 @@ export default function Users() {
               <tr className="border-b border-[#3A1A22] text-left text-sm text-[#F5DEB3]/60">
                 <th className="pb-3">Name</th>
                 <th className="pb-3">Email</th>
-                <th className="pb-3">WhatsApp</th>
+                <th className="pb-3">Phone Number</th>
+                <th className="pb-3">Check In</th>
+                <th className="pb-3">Check Out</th>
+                <th className="pb-3">Payment</th>
                 <th className="pb-3 text-right">Action</th>
               </tr>
             </thead>
@@ -178,7 +183,10 @@ export default function Users() {
                 <tr className="border-b border-[#3A1A22] text-left text-sm text-[#F5DEB3]/60">
                   <th className="pb-3">Name</th>
                   <th className="pb-3">Email</th>
-                  <th className="pb-3">WhatsApp</th>
+                  <th className="pb-3">Phone Number</th>
+                  <th className="pb-3">Check In</th>
+                  <th className="pb-3">Check Out</th>
+                  <th className="pb-3">Payment</th>
                   <th className="pb-3 text-right">Action</th>
                 </tr>
               </thead>
@@ -192,8 +200,27 @@ export default function Users() {
                     <td className="py-4 font-medium text-[#F5DEB3]">
                       {user.name}
                     </td>
-                    <td className="py-4">{user.email}</td>
+                    <td className="py-4">
+                      {user.email != "" ? user.email : "Not Provided"}
+                    </td>
                     <td className="py-4">{user.whatsappNumber}</td>
+
+                    <td className="py-4">
+                      {user.checkIn
+                        ? new Date(user.checkIn).toLocaleDateString()
+                        : "-"}
+                    </td>
+
+                    <td className="py-4">
+                      {user.checkOut
+                        ? new Date(user.checkOut).toLocaleDateString()
+                        : "-"}
+                    </td>
+
+                    <td className="py-4">
+                      {user.paymentStatus ?? "Not choosed"}
+                    </td>
+
                     <td className="py-4 text-right">
                       <button
                         onClick={() => openEditModal(user)}
@@ -258,7 +285,7 @@ export default function Users() {
 function SkeletonRow() {
   return (
     <tr className="animate-pulse">
-      {Array.from({ length: 4 }).map((_, i) => (
+      {Array.from({ length: 7 }).map((_, i) => (
         <td key={i} className="py-4">
           <div className="h-4 rounded bg-[#3A1A22]" />
         </td>

@@ -31,7 +31,10 @@ export default function BookingsPage() {
   const queryClient = useQueryClient();
   const { showToast } = useToast();
   const [page, setPage] = useState(1);
-  const [cancelConfirm, setCancelConfirm] = useState<{ open: boolean; id: string | null }>({
+  const [cancelConfirm, setCancelConfirm] = useState<{
+    open: boolean;
+    id: string | null;
+  }>({
     open: false,
     id: null,
   });
@@ -62,6 +65,7 @@ export default function BookingsPage() {
         id: String(b.booking_id),
         room_id: b.rooms?.room_id ?? 0,
         guestName: b.users?.name ?? "Unknown",
+        Whatsapp_Number: b.users?.whatsapp_number ?? "unavailable",
         roomType: b.rooms?.room_type ?? "-",
         roomName: b.rooms?.room_name ?? "-",
         status: (b.status as BookingRow["status"]) || "upcoming",
@@ -96,9 +100,7 @@ export default function BookingsPage() {
   if (isLoading) {
     return (
       <section className="space-y-6">
-        <h1 className="text-2xl font-serif text-[#F5DEB3]">
-          Bookings
-        </h1>
+        <h1 className="text-2xl font-serif text-[#F5DEB3]">Bookings</h1>
         <BookingsTableSkeleton />
       </section>
     );
@@ -108,9 +110,7 @@ export default function BookingsPage() {
   if (isError) {
     return (
       <section className="space-y-6">
-        <h1 className="text-2xl font-serif text-[#F5DEB3]">
-          Bookings
-        </h1>
+        <h1 className="text-2xl font-serif text-[#F5DEB3]">Bookings</h1>
         <p className="text-red-400">
           {(error as Error)?.message || "Failed to load bookings"}
         </p>
@@ -122,9 +122,7 @@ export default function BookingsPage() {
   return (
     <section className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <h1 className="text-2xl font-serif text-[#F5DEB3]">
-          Bookings
-        </h1>
+        <h1 className="text-2xl font-serif text-[#F5DEB3]">Bookings</h1>
         <button
           type="button"
           onClick={() => navigate("/bookings/new")}
@@ -148,18 +146,24 @@ export default function BookingsPage() {
           <BookingsTable
             bookings={paginated}
             onCancel={(id) => setCancelConfirm({ open: true, id })}
-            onReschedule={(booking) => navigate(`/bookings/${booking.id}/reschedule`)}
+            onReschedule={(booking) =>
+              navigate(`/bookings/${booking.id}/reschedule`)
+            }
           />
 
           <ConfirmModal
             open={cancelConfirm.open}
             title="Cancel booking?"
             description="This will cancel the booking. This action cannot be undone."
-            confirmText={cancelMutation.isPending ? "Cancelling…" : "Yes, cancel booking"}
+            confirmText={
+              cancelMutation.isPending ? "Cancelling…" : "Yes, cancel booking"
+            }
             cancelText="Keep booking"
             destructive
             onCancel={() => setCancelConfirm({ open: false, id: null })}
-            onConfirm={() => cancelConfirm.id && cancelMutation.mutate(cancelConfirm.id)}
+            onConfirm={() =>
+              cancelConfirm.id && cancelMutation.mutate(cancelConfirm.id)
+            }
           />
 
           {totalPages > 1 && (

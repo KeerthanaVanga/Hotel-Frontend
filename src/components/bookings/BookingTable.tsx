@@ -25,6 +25,7 @@ export default function BookingsTable({
           <thead className="border-b border-[#3A1A22] text-[#F5DEB3]/60">
             <tr>
               <th className="px-4 py-3 text-left">Guest</th>
+              <th className="px-4 py-3">Phone Numbers</th>
               <th className="px-4 py-3">Room</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3">Booking</th>
@@ -39,6 +40,7 @@ export default function BookingsTable({
             {bookings.map((b) => (
               <tr key={b.id} className="hover:bg-white/5">
                 <td className="px-4 py-3">{b.guestName}</td>
+                <td className="px-4 py-3 text-center">{b.Whatsapp_Number}</td>
                 <td className="px-4 py-3 text-center">{b.roomName}</td>
                 <td className="px-4 py-3 text-center">
                   <span
@@ -100,7 +102,9 @@ export default function BookingsTable({
             </div>
 
             <p className="text-sm text-[#F5DEB3]/70">{b.roomType}</p>
-            <p className="text-sm">Guests: {b.adults}A / {b.children}C</p>
+            <p className="text-sm">
+              Guests: {b.adults}A / {b.children}C
+            </p>
             <p className="text-sm">Nights: {b.nights}</p>
             <p className="text-sm">
               {b.fromDate} → {b.toDate}

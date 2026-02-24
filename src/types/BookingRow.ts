@@ -2,6 +2,7 @@ export type BookingRow = {
   id: string;
   room_id: number;
   guestName: string;
+  Whatsapp_Number: string;
   roomType: string;
   roomName: string;
   status: string;
@@ -10,5 +11,5 @@ export type BookingRow = {
   children: number;
   nights: number;
   fromDate: string; // YYYY-MM-DD
-  toDate: string;   // YYYY-MM-DD
+  toDate: string; // YYYY-MM-DD
 };
