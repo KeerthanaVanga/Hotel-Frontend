@@ -7,7 +7,7 @@ interface Props {
   users: ChatUser[];
   selectedUser: ChatUser | null;
   onSelect: (u: ChatUser) => void;
-  handleuser: () => void;
+  handleuser?: () => void;
 }
 
 export default function ChatSidebar({
@@ -25,6 +25,7 @@ export default function ChatSidebar({
       <div className="p-4 flex justify-center border-b border-[#3A1A22]">
         <button
           onClick={handleuser}
+          disabled={!handleuser}
           className="
       flex items-center gap-2
       px-4 py-2
