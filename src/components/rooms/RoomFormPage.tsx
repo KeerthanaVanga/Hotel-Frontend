@@ -10,7 +10,6 @@ const EMPTY_ROOM: Room = {
   id: "",
   name: "",
   type: "",
-  roomNumber: 0,     // ✅ NEW
   totalRooms: 0,
   pricePerNight: 0,
   size: "",
@@ -75,7 +74,7 @@ export default function RoomFormPage() {
   // For preview URLs of new files (so we can revoke later)
   const newImagePreviews = useMemo(
     () => newImages.map((f) => URL.createObjectURL(f)),
-    [newImages]
+    [newImages],
   );
 
   // cleanup object urls
@@ -99,8 +98,7 @@ export default function RoomFormPage() {
       id: String(apiRoom.room_id),
       name: apiRoom.room_name,
       type: apiRoom.room_type,
-      roomNumber: Number(apiRoom.room_number),   // ✅ NEW
-      totalRooms: Number(apiRoom.total_rooms), 
+      totalRooms: Number(apiRoom.total_rooms),
       pricePerNight: Number(apiRoom.price),
       size: apiRoom.room_size,
       capacity: Number(apiRoom.guests),
@@ -142,7 +140,6 @@ export default function RoomFormPage() {
     form.append("guests", String(room.capacity));
     form.append("description", room.description);
     form.append("amenities", JSON.stringify(room.amenities));
-    form.append("room_number", String(room.roomNumber));
     form.append("total_rooms", String(room.totalRooms));
 
     // Keep existing images (edit)
@@ -310,19 +307,13 @@ export default function RoomFormPage() {
         {/* ---------------- Fields ---------------- */}
         <div className="grid gap-4 sm:grid-cols-2">
           <Input
-    label="Room Number"
-    type="number"
-    value={room.roomNumber}
-    onChange={(v: string) => setRoom({ ...room, roomNumber: Number(v) })}
-    
-  />
-  <Input
-    label="Total Rooms"
-    type="number"
-    value={room.totalRooms}
-    onChange={(v: string) => setRoom({ ...room, totalRooms: Number(v) })}
-
-  />
+            label="Total Rooms"
+            type="number"
+            value={room.totalRooms}
+            onChange={(v: string) =>
+              setRoom({ ...room, totalRooms: Number(v) })
+            }
+          />
           <Input
             label="Room Name"
             value={room.name}
@@ -400,7 +391,7 @@ export default function RoomFormPage() {
             {String(
               (createMutation.error as Error)?.message ||
                 (updateMutation.error as Error)?.message ||
-                "Failed to save room"
+                "Failed to save room",
             )}
           </p>
         )}

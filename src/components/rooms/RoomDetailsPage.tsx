@@ -21,8 +21,7 @@ export default function RoomDetailsPage() {
       id: String(r.room_id),
       name: r.room_name,
       type: r.room_type,
-       roomNumber: Number(r.room_number),   // ✅ NEW
-      totalRooms: Number(r.total_rooms),   // ✅ NEW
+      totalRooms: Number(r.total_rooms), // ✅ NEW
       pricePerNight: Number(r.price),
       size: r.room_size,
       capacity: r.guests,
@@ -55,7 +54,6 @@ export default function RoomDetailsPage() {
         <p className="text-[#F5DEB3]/80">{room.description}</p>
 
         <div className="grid grid-cols-2 gap-4 text-sm text-[#F5DEB3]/70">
-          <p>🏷 Room No: {room.roomNumber}</p>
           <p>🏨 Total Rooms: {room.totalRooms}</p>
           <p>👤 Capacity: {room.capacity} guests</p>
           <p>📐 Size: {room.size}</p>

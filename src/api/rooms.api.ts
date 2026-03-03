@@ -6,7 +6,6 @@ export type ApiRoom = {
   room_id: number;
   room_name: string;
   room_type: string;
-  room_number: number;
   rooms_available: number;
   price: string;
   description: string;
@@ -43,9 +42,7 @@ export async function getRoomById(roomId: string) {
     throw new Error("Failed to fetch room");
   }
 
-  const room = res.data.data.find(
-    (r) => String(r.room_id) === roomId
-  );
+  const room = res.data.data.find((r) => String(r.room_id) === roomId);
 
   if (!room) {
     throw new Error("Room not found");

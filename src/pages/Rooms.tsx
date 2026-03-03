@@ -21,8 +21,7 @@ export default function RoomsPage() {
         id: String(r.room_id),
         name: r.room_name,
         type: r.room_type,
-        roomNumber: Number(r.room_number),      // ✅ NEW
-        totalRooms: Number(r.total_rooms), 
+        totalRooms: Number(r.total_rooms),
         pricePerNight: Number(r.price),
         size: r.room_size,
         capacity: r.guests,
