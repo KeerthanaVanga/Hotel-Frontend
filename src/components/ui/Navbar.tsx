@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import {
-  Bell,
+  // Bell,
   Menu,
   X,
   ChevronDown,
@@ -12,8 +12,8 @@ import {
   BedDouble,
 } from "lucide-react";
 import { NavLink, useNavigate } from "react-router-dom";
-import NotificationDropdown from "../layout/NotificationDropdown";
-import { notifications } from "../../utils/mockNotification";
+// import NotificationDropdown from "../layout/NotificationDropdown";
+// import { notifications } from "../../utils/mockNotification";
 import { useAuth } from "../../context/AuthContext";
 import { useToast } from "../layout/ToastProvider";
 import HotelLogo from "../../assets/ravila-logo.png";
@@ -28,12 +28,12 @@ const navLinks = [
 const Navbar = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [profileOpen, setProfileOpen] = useState(false);
-  const [notifOpen, setNotifOpen] = useState(false);
+  // const [notifOpen, setNotifOpen] = useState(false);
 
   const profileRef = useRef<HTMLDivElement>(null);
-  const notifRef = useRef<HTMLDivElement>(null);
+  // const notifRef = useRef<HTMLDivElement>(null);
 
-  const unreadCount = notifications.filter((n) => n.unread).length;
+  // const unreadCount = notifications.filter((n) => n.unread).length;
 
   const navigate = useNavigate();
   const { logoutUser } = useAuth();
@@ -52,15 +52,15 @@ const Navbar = () => {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  useEffect(() => {
-    const handler = (e: MouseEvent) => {
-      if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
-        setNotifOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
-  }, []);
+  // useEffect(() => {
+  //   const handler = (e: MouseEvent) => {
+  //     if (notifRef.current && !notifRef.current.contains(e.target as Node)) {
+  //       setNotifOpen(false);
+  //     }
+  //   };
+  //   document.addEventListener("mousedown", handler);
+  //   return () => document.removeEventListener("mousedown", handler);
+  // }, []);
 
   const handleLogout = async () => {
     try {
@@ -121,7 +121,7 @@ const Navbar = () => {
           {/* Right */}
           <div className="flex items-center gap-4">
             {/* Notifications */}
-            <div className="relative" ref={notifRef}>
+            {/*<div className="relative" ref={notifRef}>
               <button
                 onClick={() => setNotifOpen((s) => !s)}
                 className="relative text-[#F5DEB3]/70 hover:text-[#F5DEB3] transition"
@@ -136,7 +136,7 @@ const Navbar = () => {
               {notifOpen && (
                 <NotificationDropdown notifications={notifications} />
               )}
-            </div>
+            </div>*/}
 
             {/* Profile */}
             <div className="relative" ref={profileRef}>
