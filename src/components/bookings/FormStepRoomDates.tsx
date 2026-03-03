@@ -25,7 +25,7 @@ export function FormStepRoomDates({
 
   return (
     <div className="grid grid-cols-[repeat(auto-fill,minmax(14rem,1fr))] gap-4">
-      <div className="min-w-0 [grid-column:1/-1]">
+      <div className="min-w-0 col-span-full">
         <label className="mb-1 block text-sm font-medium text-[#F5DEB3]">
           Room
         </label>
@@ -38,12 +38,11 @@ export function FormStepRoomDates({
           <option value="">Select a room</option>
           {rooms.map((r) => (
             <option key={r.room_id} value={r.room_id}>
-              {r.room_name || `${r.room_type} #${r.room_number}`} — ₹
-              {r.price}/night
+              {r.room_name || `${r.room_type}`} — ₹{r.price}/night
             </option>
           ))}
         </select>
-        <div className="min-h-[1.25rem] pt-1 text-xs text-red-400">
+        <div className="min-h-5 pt-1 text-xs text-red-400">
           {touched.room_id && errors.room_id && errors.room_id}
         </div>
       </div>
