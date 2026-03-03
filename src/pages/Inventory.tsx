@@ -1,7 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Search } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import InventoryCard from "../components/inventory/InventoryCard";
 import InventorySkeleton from "../components/inventory/InventorySkeleton";
@@ -10,48 +10,46 @@ import EmptyState from "../components/ui/EmptyState";
 import { searchInventory } from "../api/inventory.api";
 import type { HotelInventory } from "../types/Inventory";
 
-/** Persist search in URL so it survives back navigation and refresh. No Redis needed. */
+const DEFAULT_QUERY = "hotels near ravila grand hotel madinaguda";
+const DEFAULT_ADULTS = 2;
+
 export default function InventoryPage() {
-  const [urlParams, setUrlParams] = useSearchParams();
-  const qFromUrl = urlParams.get("q") ?? "";
-  const adultsFromUrl = urlParams.get("adults");
-
-  const [query, setQuery] = useState(qFromUrl);
-
-  useEffect(() => {
-    setQuery(qFromUrl);
-  }, [qFromUrl]);
-
-  const searchParams = qFromUrl
-    ? {
-        q: qFromUrl,
-        adults: adultsFromUrl ? Number(adultsFromUrl) : 2,
-      }
-    : null;
-
   const navigate = useNavigate();
 
+  // ✅ What user types
+  const [inputValue, setInputValue] = useState(DEFAULT_QUERY);
+
+  // ✅ What API uses
+  const [searchQuery, setSearchQuery] = useState(DEFAULT_QUERY);
+
   const { data, isLoading } = useQuery({
-    queryKey: ["inventory", searchParams],
-    queryFn: () => searchInventory(searchParams!),
-    enabled: !!searchParams,
+    queryKey: ["inventory", searchQuery],
+    queryFn: () =>
+      searchInventory({
+        q: searchQuery,
+        adults: DEFAULT_ADULTS,
+      }),
   });
 
   const properties: HotelInventory[] = data?.properties ?? [];
 
   const handleSearch = () => {
-    if (!query.trim()) return;
-    setUrlParams({ q: query.trim(), adults: "2" });
+    if (!inputValue.trim()) return;
+    setSearchQuery(inputValue.trim());
   };
 
   return (
     <section className="space-y-6 min-w-0">
+      {/* Search Section */}
       <div className="flex flex-col md:flex-row gap-3">
         <div className="relative flex-1">
-          <Search className="absolute left-3 top-3 text-[#F5DEB3]/60" size={18} />
+          <Search
+            className="absolute left-3 top-3 text-[#F5DEB3]/60"
+            size={18}
+          />
           <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && handleSearch()}
             placeholder="Search hotels, places..."
             className="w-full rounded-lg bg-[#241217] border border-[#3A1A22] pl-10 pr-4 py-2 text-[#F5DEB3] focus:border-[#D4AF37] outline-none"
@@ -66,14 +64,14 @@ export default function InventoryPage() {
         </button>
       </div>
 
-      {!searchParams && (
+      {isLoading && <InventorySkeleton />}
+
+      {!isLoading && properties.length === 0 && (
         <EmptyState
-          title="Search hotel inventory"
-          description="Find hotels across platforms like Expedia, Booking.com, Goibibo & more."
+          title="No hotels found"
+          description="Try searching for a different location."
         />
       )}
-
-      {isLoading && <InventorySkeleton />}
 
       <div className="space-y-4">
         {properties.map((hotel) => (
@@ -81,9 +79,11 @@ export default function InventoryPage() {
             key={hotel.id}
             hotel={hotel}
             onViewDetails={() => {
-              // pass q so details can fetch properly
               navigate(`/inventory/${hotel.propertyToken}`, {
-                state: { q: searchParams?.q, adults: searchParams?.adults ?? 2 },
+                state: {
+                  q: searchQuery,
+                  adults: DEFAULT_ADULTS,
+                },
               });
             }}
           />
