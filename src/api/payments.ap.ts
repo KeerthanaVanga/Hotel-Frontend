@@ -4,8 +4,8 @@ export type ApiPayment = {
   payment_id: string;
   user_id: number;
   booking_id: string;
-  method: string;
-  status: "pending" | "success" | "partial";
+  payment_method: string;
+  payment_status: string;
   currency: string;
   bill_amount: string;
   bill_paid_amount: string;
@@ -32,9 +32,8 @@ export type GetPaymentsResponse = {
 };
 
 export async function getPayments() {
-  const res = await axiosInstance.get<GetPaymentsResponse>(
-    "/payments/payments"
-  );
+  const res =
+    await axiosInstance.get<GetPaymentsResponse>("/payments/payments");
 
   if (!res.data.success) {
     throw new Error("Failed to fetch payments");
@@ -57,11 +56,11 @@ export type UpdatePaymentResponse = {
 
 export async function updatePayment(
   paymentId: string,
-  payload: UpdatePaymentPayload
+  payload: UpdatePaymentPayload,
 ) {
   const res = await axiosInstance.patch<UpdatePaymentResponse>(
     `/payments/payments/${paymentId}`,
-    payload
+    payload,
   );
   if (!res.data.success) {
     throw new Error(res.data.message || "Failed to update payment");

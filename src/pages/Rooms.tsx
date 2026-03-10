@@ -47,12 +47,21 @@ export default function RoomsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-serif text-[#F5DEB3]">Rooms</h1>
 
-        <button
-          onClick={() => navigate("/rooms/new")}
-          className="rounded-md bg-[#D4AF37] px-4 py-2 font-semibold text-[#1B0F12] hover:bg-[#c9a633]"
-        >
-          Add Room
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate("/rooms/numbers")}
+            className="rounded-md border border-[#3A1A22] px-4 py-2 font-semibold text-[#F5DEB3]/80 hover:border-[#D4AF37] hover:text-[#F5DEB3]"
+          >
+            Room Numbers
+          </button>
+
+          <button
+            onClick={() => navigate("/rooms/new")}
+            className="rounded-md bg-[#D4AF37] px-4 py-2 font-semibold text-[#1B0F12] hover:bg-[#c9a633]"
+          >
+            Add Room
+          </button>
+        </div>
       </div>
 
       {/* Grid */}

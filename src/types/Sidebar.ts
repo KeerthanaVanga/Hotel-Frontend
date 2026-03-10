@@ -4,6 +4,7 @@ import {
   Users,
   BedDouble,
   CalendarCheck,
+  CalendarClock,
   CreditCard,
   Star,
   MessageCircle,
@@ -43,6 +44,11 @@ export const sidebarItems = [
     label: "Bookings",
     icon: CalendarCheck,
     path: "/bookings",
+  },
+  {
+    label: "Check-in Options",
+    icon: CalendarClock,
+    path: "/checkin-options",
   },
 
   {

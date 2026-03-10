@@ -12,11 +12,13 @@ const AuthPage = lazy(() => import("../pages/AuthPage"));
 const PageNotFound = lazy(() => import("../pages/PageNotFound"));
 const CheckInPage = lazy(() => import("../pages/Check_In"));
 const CheckOutPage = lazy(() => import("../pages/Check_Out"));
+const CheckInOptionsPage = lazy(() => import("../pages/CheckInOptions"));
 const CalenderPage = lazy(() => import("../pages/Calender"));
 const InventoryPage = lazy(() => import("../pages/Inventory"));
 const ReportsPage = lazy(() => import("../pages/Reports"));
 const UsersPage = lazy(() => import("../pages/Users"));
 const RoomsPage = lazy(() => import("../pages/Rooms"));
+const RoomNumbersPage = lazy(() => import("../pages/RoomNumbers"));
 const BookingsPage = lazy(() => import("../pages/Bookings"));
 const CreateBookingPage = lazy(() => import("../pages/CreateBooking"));
 const RescheduleBookingPage = lazy(() => import("../pages/RescheduleBooking"));
@@ -65,6 +67,10 @@ const router = createBrowserRouter([
                 element: <CheckOutPage />,
               },
               {
+                path: "/checkin-options",
+                element: <CheckInOptionsPage />,
+              },
+              {
                 path: "/calendar",
                 element: <CalenderPage />,
               },
@@ -102,6 +108,10 @@ const router = createBrowserRouter([
                   {
                     path: "new",
                     element: <RoomsEditPage />,
+                  },
+                  {
+                    path: "numbers",
+                    element: <RoomNumbersPage />,
                   },
                 ],
               },

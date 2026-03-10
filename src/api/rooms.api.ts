@@ -23,6 +23,31 @@ export type GetRoomsResponse = {
   data: ApiRoom[];
 };
 
+export type ApiRoomNumber = {
+  id: number;
+  room_number: number;
+  status: string;
+  room_id: number;
+  created_at: string;
+  updated_at: string;
+  rooms: {
+    room_id: number;
+    room_name: string;
+    room_type: string;
+    price: string;
+    total_rooms: number;
+    rooms_available: number;
+    booked_rooms: number;
+    guests: number;
+  };
+};
+
+export type GetRoomNumbersResponse = {
+  success: boolean;
+  count: number;
+  data: ApiRoomNumber[];
+};
+
 /* ---------- API CALLS ---------- */
 
 export async function getRooms() {
@@ -66,5 +91,17 @@ export async function updateRoom(roomId: string, payload: FormData) {
   });
 
   if (!res.data.success) throw new Error("Failed to update room");
+  return res.data;
+}
+
+export async function getRoomNumbers() {
+  const res = await axiosInstance.get<GetRoomNumbersResponse>(
+    "/rooms/room-numbers",
+  );
+
+  if (!res.data.success) {
+    throw new Error("Failed to fetch room numbers");
+  }
+
   return res.data;
 }

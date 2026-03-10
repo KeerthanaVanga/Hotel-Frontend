@@ -5,6 +5,8 @@ export type BookingRow = {
   Whatsapp_Number: string;
   roomType: string;
   roomName: string;
+  room_number: number;
+  title: string;
   status: string;
   bookingDate: string; // YYYY-MM-DD
   adults: number;

@@ -27,6 +27,8 @@ export default function BookingsTable({
               <th className="px-4 py-3 text-left">Guest</th>
               <th className="px-4 py-3">Phone Numbers</th>
               <th className="px-4 py-3">Room</th>
+              <th className="px-4 py-3">Room Number</th>
+              <th className="px-4 py-3">Check-in Option</th>
               <th className="px-4 py-3">Status</th>
               <th className="px-4 py-3">Booking</th>
               <th className="px-4 py-3">Guests</th>
@@ -42,6 +44,8 @@ export default function BookingsTable({
                 <td className="px-4 py-3">{b.guestName}</td>
                 <td className="px-4 py-3 text-center">{b.Whatsapp_Number}</td>
                 <td className="px-4 py-3 text-center">{b.roomName}</td>
+                <td className="px-4 py-3 text-center">{b.room_number}</td>
+                <td className="px-4 py-3 text-center">{b.title}</td>
                 <td className="px-4 py-3 text-center">
                   <span
                     className={`rounded-full px-2.5 py-1 text-xs font-medium ${

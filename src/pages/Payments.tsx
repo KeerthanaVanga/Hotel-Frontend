@@ -59,8 +59,8 @@ export default function PaymentsPage() {
           billGenerated,
           billPaid,
           remainingToPay: Math.max(0, billGenerated - billPaid),
-          paymentMethod: p.method,
-          status: p.status,
+          paymentMethod: p.payment_method,
+          status: p.payment_status,
         };
       }),
   });

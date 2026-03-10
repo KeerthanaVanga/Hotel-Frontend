@@ -24,6 +24,15 @@ export type ApiBooking = {
     room_number: number;
     price: string;
   };
+  room_units: {
+    room_id: number;
+    room_number: number;
+  };
+  checkin_options: {
+    id: number;
+    title: string;
+    time_range: string;
+  };
 };
 
 export type ApiBookingDetail = ApiBooking & {

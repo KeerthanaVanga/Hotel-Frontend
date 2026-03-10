@@ -64,6 +64,8 @@ export default function BookingsPage() {
       response.data.map((b) => ({
         id: String(b.booking_id),
         room_id: b.rooms?.room_id ?? 0,
+        room_number: b.room_units?.room_number ?? 0,
+        title: b.checkin_options?.title ?? "Unknown",
         guestName: b.users?.name ?? "Unknown",
         Whatsapp_Number: b.users?.whatsapp_number ?? "unavailable",
         roomType: b.rooms?.room_type ?? "-",
