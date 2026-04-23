@@ -1,6 +1,5 @@
 import Skeleton from "../ui/Skeleton";
-import CheckInOptionsTableSkeleton from "../checkin-options/CheckInOptionsPageSkeleton";
-
+import CheckInOptionsTableSkeleton from "./CheckInOptionsTableSkeleton";
 export default function CheckInOptionsPageSkeleton() {
   return (
     <section className="space-y-6">

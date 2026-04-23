@@ -31,7 +31,7 @@ function mapCheckInOption(option: ApiCheckInOption): CheckInOption {
 
 export async function getCheckInOptions(): Promise<CheckInOption[]> {
   const res =
-    await axiosInstance.get<CheckInOptionsApiResponse>("/checkins/options");
+    await axiosInstance.get<CheckInOptionsApiResponse>("/checkin-options");
 
   if (!res.data.success) {
     throw new Error("Failed to fetch check-in options");
